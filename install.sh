@@ -385,6 +385,42 @@ install_starship_config() {
   fi
 }
 
+# Install Ghostty terminal configuration
+install_ghostty_config() {
+  local config_base="$1"
+  local force_overwrite="$2"
+  local dry_run="$3"
+  
+  if [[ "$dry_run" -eq 1 ]]; then
+    if [ -f "$config_base/ghostty/config" ]; then
+      print_color "$BOLD" "  👻 Ghostty Configuration:"
+      local target_dir="$HOME/Library/Application Support/com.mitchellh.ghostty"
+      local target_file="$target_dir/config"
+      if [ -f "$target_file" ]; then
+        print_color "$YELLOW" "    ⚠️  ghostty/config (already exists)"
+      else
+        print_color "$GREEN" "    + ghostty/config (new file)"
+      fi
+      printf "\n"
+    fi
+  else
+    if [ -f "$config_base/ghostty/config" ]; then
+      log_info "Installing Ghostty configuration..."
+      local target_dir="$HOME/Library/Application Support/com.mitchellh.ghostty"
+      local target_file="$target_dir/config"
+      
+      # Create directory if it doesn't exist
+      mkdir -p "$target_dir"
+      
+      if [ -f "$target_file" ] && [ "$force_overwrite" -eq 0 ]; then
+        backup_file "$target_file"
+      fi
+      cp "$config_base/ghostty/config" "$target_file"
+      log_success "  → Ghostty config installed"
+    fi
+  fi
+}
+
 # Main installation function
 main() {
   local force_overwrite=0
@@ -539,6 +575,25 @@ USAGE
       "tree-sitter"    # Parser generator for Neovim
       # Development tools
       "foundry"        # Ethereum development toolkit
+      # New tools
+      "ast-grep"       # Structural search/replace tool
+      "awscli"         # AWS Command Line Interface
+      "azure-cli"      # Azure Command Line Interface
+      "bash"           # Latest Bash from Homebrew
+      "codex"          # AI code assistant
+      "gh"             # GitHub CLI
+      "git"            # Latest Git from Homebrew
+      "helm"           # Kubernetes package manager
+      "helm-docs"      # Auto-generate Helm chart documentation
+      "kubectx"        # Switch between kubectl contexts
+      "kubernetes-cli" # kubectl command
+      "node"           # Node.js JavaScript runtime
+      "rsync"          # Fast file transfer
+      "sudo-touchid"   # Enable TouchID for sudo
+      "tilt"           # Local Kubernetes development
+      "tmux"           # Terminal multiplexer
+      "zellij"         # Modern terminal multiplexer
+      "uv"             # Fast Python package installer
     )
     
     for tool in "${TOOLS[@]}"; do
@@ -547,6 +602,25 @@ USAGE
       else
         log_info "Installing $tool..."
         "$BREW_PATH" install "$tool"
+      fi
+    done
+    
+    # Install cask applications
+    log_info "Installing cask applications..."
+    local CASKS=(
+      "1password"      # Password manager
+      "chatgpt"        # ChatGPT desktop app
+      "cursor"         # AI-powered code editor
+      "google-cloud-sdk" # Google Cloud SDK (gcloud)
+      "ghostty"        # Modern terminal emulator
+    )
+    
+    for cask in "${CASKS[@]}"; do
+      if "$BREW_PATH" list --cask --versions "$cask" &> /dev/null; then
+        log_success "$cask is already installed"
+      else
+        log_info "Installing $cask..."
+        "$BREW_PATH" install --cask "$cask"
       fi
     done
     
@@ -562,6 +636,87 @@ USAGE
         log_warning "Could not start atuin service automatically"
         log_info "This is normal on some macOS versions. Atuin will still work in your shell."
       fi
+    fi
+    
+    # Configure tools that need special setup
+    log_info "Configuring tool-specific settings..."
+    
+    # Configure sudo-touchid
+    if command -v sudo-touchid &> /dev/null; then
+      log_info "Configuring TouchID for sudo..."
+      if sudo-touchid --check 2>/dev/null; then
+        log_success "TouchID for sudo is already configured"
+      else
+        log_info "Enabling TouchID for sudo (requires sudo)..."
+        sudo sudo-touchid
+        log_success "TouchID for sudo enabled"
+      fi
+    fi
+    
+    # Configure kubectx/kubens
+    if command -v kubectx &> /dev/null; then
+      log_info "Configuring kubectx..."
+      # Create completion directories if they don't exist
+      mkdir -p ~/.config/fish/completions
+      mkdir -p ~/.config/zsh/completions
+      mkdir -p ~/.config/bash/completions
+      
+      # Link completions for kubectx and kubens
+      local BREW_PREFIX
+      if [[ "$ARCH" == "arm64" ]]; then
+        BREW_PREFIX="/opt/homebrew"
+      else
+        BREW_PREFIX="/usr/local"
+      fi
+      
+      # Fish completions
+      if [ -f "$BREW_PREFIX/share/fish/vendor_completions.d/kubectx.fish" ]; then
+        ln -sf "$BREW_PREFIX/share/fish/vendor_completions.d/kubectx.fish" ~/.config/fish/completions/
+        ln -sf "$BREW_PREFIX/share/fish/vendor_completions.d/kubens.fish" ~/.config/fish/completions/
+      fi
+      
+      # Zsh completions  
+      if [ -f "$BREW_PREFIX/share/zsh/site-functions/_kubectx" ]; then
+        ln -sf "$BREW_PREFIX/share/zsh/site-functions/_kubectx" ~/.config/zsh/completions/
+        ln -sf "$BREW_PREFIX/share/zsh/site-functions/_kubens" ~/.config/zsh/completions/
+      fi
+      
+      log_success "kubectx/kubens completions configured"
+    fi
+    
+    # Configure Google Cloud SDK
+    if [ -d "/opt/homebrew/Caskroom/google-cloud-sdk" ] || [ -d "/usr/local/Caskroom/google-cloud-sdk" ]; then
+      log_info "Google Cloud SDK installed - shell integration will be configured via conf.d files"
+    fi
+    
+    # Configure Helm
+    if command -v helm &> /dev/null; then
+      log_info "Generating Helm completions..."
+      helm completion bash > ~/.config/bash/completions/helm.bash 2>/dev/null || true
+      helm completion zsh > ~/.config/zsh/completions/_helm 2>/dev/null || true
+      helm completion fish > ~/.config/fish/completions/helm.fish 2>/dev/null || true
+      log_success "Helm completions generated"
+    fi
+    
+    # Configure GitHub CLI
+    if command -v gh &> /dev/null; then
+      log_info "Generating GitHub CLI completions..."
+      gh completion -s bash > ~/.config/bash/completions/gh.bash 2>/dev/null || true
+      gh completion -s zsh > ~/.config/zsh/completions/_gh 2>/dev/null || true
+      gh completion -s fish > ~/.config/fish/completions/gh.fish 2>/dev/null || true
+      log_success "GitHub CLI completions generated"
+    fi
+    
+    # Install Claude Code CLI
+    log_info "Installing Claude Code CLI..."
+    if command -v claude &> /dev/null; then
+      log_success "Claude Code is already installed"
+      # Note: claude-code doesn't have an update command built-in
+      # Users need to reinstall to update
+    else
+      log_info "Installing Claude Code via official installer..."
+      curl -fsSL https://claude.ai/install.sh | bash -s latest
+      log_success "Claude Code installed successfully"
     fi
     
     # Install Bun using official installer
@@ -761,6 +916,9 @@ EOF
     # Install Starship for any shell choice
     install_starship_config "$config_base" "$force_overwrite" "$dry_run"
     
+    # Install Ghostty terminal configuration
+    install_ghostty_config "$config_base" "$force_overwrite" "$dry_run"
+    
   else
     # Remote installation via curl
     log_info "Remote installation - downloading configurations..."
@@ -825,7 +983,8 @@ EOF
     echo '    "~/.bash_profile",' >> "$manifest"
     echo '    "~/.config/bash/",' >> "$manifest"
     echo '    "~/.config/nvim/",' >> "$manifest"
-    echo '    "~/.config/starship.toml"' >> "$manifest"
+    echo '    "~/.config/starship.toml",' >> "$manifest"
+    echo '    "~/Library/Application Support/com.mitchellh.ghostty/config"' >> "$manifest"
     
     cat >> "$manifest" <<EOF
   ],
@@ -894,6 +1053,7 @@ EOF
   printf "  • ~/.config/bash/conf.d/ (Bash modular configuration)\n"
   printf "  • ~/.config/nvim/ (LazyVim configuration)\n"
   printf "  • ~/.config/starship.toml\n"
+  printf "  • ~/Library/Application Support/com.mitchellh.ghostty/config\n"
   printf "\n"
   
   log_info "To uninstall, run: ./uninstall.sh"
