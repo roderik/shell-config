@@ -739,6 +739,7 @@ USAGE
     log_info "[DRY RUN] Would add Fish shell to /etc/shells"
     log_info "[DRY RUN] Would add Zsh to /etc/shells"
     log_info "[DRY RUN] Would create configuration directories"
+    log_info "[DRY RUN] Would fix Zsh compinit insecure directory permissions"
     printf "\n"
   else
     # Configure Fish
@@ -766,6 +767,48 @@ USAGE
     # Create Zsh config directories
     log_info "Creating Zsh configuration directories..."
     mkdir -p ~/.config/zsh/conf.d
+    
+    # Fix Zsh compinit insecure directories
+    log_info "Fixing Zsh completion directory permissions..."
+    
+    # Fix permissions for Zsh directories to prevent compinit warnings
+    # This handles "compinit: insecure directories" errors
+    if [ -d /usr/local/share/zsh ]; then
+      # Intel Mac
+      compaudit 2>/dev/null | xargs -I {} sudo chmod 755 {} 2>/dev/null || true
+      sudo chmod 755 /usr/local/share/zsh 2>/dev/null || true
+      sudo chmod 755 /usr/local/share/zsh/site-functions 2>/dev/null || true
+    fi
+    
+    if [ -d /opt/homebrew/share/zsh ]; then
+      # Apple Silicon Mac
+      compaudit 2>/dev/null | xargs -I {} sudo chmod 755 {} 2>/dev/null || true
+      sudo chmod 755 /opt/homebrew/share/zsh 2>/dev/null || true
+      sudo chmod 755 /opt/homebrew/share/zsh/site-functions 2>/dev/null || true
+    fi
+    
+    # Also fix user's Zsh directories
+    if [ -d ~/.config/zsh ]; then
+      chmod 755 ~/.config/zsh 2>/dev/null || true
+      chmod 755 ~/.config/zsh/conf.d 2>/dev/null || true
+    fi
+    
+    # Fix any other insecure directories found by compaudit
+    if command -v compaudit &> /dev/null; then
+      local insecure_dirs
+      insecure_dirs=$(compaudit 2>/dev/null || true)
+      if [ -n "$insecure_dirs" ]; then
+        log_warning "Found insecure Zsh directories, fixing permissions..."
+        echo "$insecure_dirs" | while IFS= read -r dir; do
+          if [ -d "$dir" ]; then
+            sudo chmod 755 "$dir" 2>/dev/null || true
+            log_success "Fixed permissions for: $dir"
+          fi
+        done
+      else
+        log_success "Zsh completion directories are secure"
+      fi
+    fi
     
     # Create Bash config directories
     log_info "Creating Bash configuration directories..."
