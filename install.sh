@@ -201,6 +201,93 @@ install_fish_config() {
   fi
 }
 
+# Install Bash configuration
+install_bash_config() {
+  local config_base="$1"
+  local force_overwrite="$2"
+  local dry_run="$3"
+  
+  if [[ "$dry_run" -eq 1 ]]; then
+    # Dry run for Bash
+    if [[ -f "$config_base/bash/.bashrc" ]] || [[ -f "$config_base/bash/.bash_profile" ]] || [[ -d "$config_base/bash/conf.d" ]]; then
+      print_color "$BOLD" "  🐚 Bash Configuration:"
+      
+      # Main .bashrc
+      if [ -f "$config_base/bash/.bashrc" ]; then
+        local target_file=~/.bashrc
+        if [ -f "$target_file" ]; then
+          print_color "$YELLOW" "    ⚠️  .bashrc (already exists)"
+        else
+          print_color "$GREEN" "    + .bashrc (new file)"
+        fi
+      fi
+      
+      # .bash_profile
+      if [ -f "$config_base/bash/.bash_profile" ]; then
+        local target_file=~/.bash_profile
+        if [ -f "$target_file" ]; then
+          print_color "$YELLOW" "    ⚠️  .bash_profile (already exists)"
+        else
+          print_color "$GREEN" "    + .bash_profile (new file)"
+        fi
+      fi
+      
+      # Conf.d modules
+      if [ -d "$config_base/bash/conf.d" ]; then
+        find "$config_base/bash/conf.d" -name "*.bash" -type f | sort | while read conf_file; do
+          local conf_name=$(basename "$conf_file")
+          local target_file=~/.config/bash/conf.d/"$conf_name"
+          if [ -f "$target_file" ]; then
+            print_color "$YELLOW" "    ⚠️  conf.d/$conf_name (already exists)"
+          else
+            print_color "$GREEN" "    + conf.d/$conf_name (new file)"
+          fi
+        done
+      fi
+      printf "\n"
+    fi
+  else
+    # Actual installation for Bash
+    if [[ -f "$config_base/bash/.bashrc" ]] || [[ -f "$config_base/bash/.bash_profile" ]] || [[ -d "$config_base/bash/conf.d" ]]; then
+      log_info "Installing Bash configuration..."
+      
+      # Copy main .bashrc
+      if [ -f "$config_base/bash/.bashrc" ]; then
+        local target_file=~/.bashrc
+        if [ -f "$target_file" ] && [ "$force_overwrite" -eq 0 ]; then
+          backup_file "$target_file"
+        fi
+        cp "$config_base/bash/.bashrc" "$target_file"
+        log_success "  → .bashrc installed"
+      fi
+      
+      # Copy .bash_profile
+      if [ -f "$config_base/bash/.bash_profile" ]; then
+        local target_file=~/.bash_profile
+        if [ -f "$target_file" ] && [ "$force_overwrite" -eq 0 ]; then
+          backup_file "$target_file"
+        fi
+        cp "$config_base/bash/.bash_profile" "$target_file"
+        log_success "  → .bash_profile installed"
+      fi
+      
+      # Copy conf.d modules
+      if [ -d "$config_base/bash/conf.d" ]; then
+        mkdir -p ~/.config/bash/conf.d
+        find "$config_base/bash/conf.d" -name "*.bash" -type f | sort | while read conf_file; do
+          local conf_name=$(basename "$conf_file")
+          local target_file=~/.config/bash/conf.d/"$conf_name"
+          if [ -f "$target_file" ] && [ "$force_overwrite" -eq 0 ]; then
+            backup_file "$target_file"
+          fi
+          cp "$conf_file" "$target_file"
+          log_success "  → conf.d/$conf_name installed"
+        done
+      fi
+    fi
+  fi
+}
+
 # Install Zsh configuration
 install_zsh_config() {
   local config_base="$1"
@@ -318,7 +405,7 @@ main() {
         cat <<'USAGE'
 Usage: ./install.sh [OPTIONS]
 
-Installs modern shell configuration for both Fish and Zsh shells with development tools.
+Installs modern shell configuration for Fish, Zsh, and Bash shells with development tools.
 
 Options:
   --force          Overwrite existing configurations
@@ -328,6 +415,7 @@ Options:
 Configuration is installed to:
   - Fish: ~/.config/fish/
   - Zsh: ~/.config/zsh/ and ~/.zshrc
+  - Bash: ~/.config/bash/, ~/.bashrc and ~/.bash_profile
   - Starship: ~/.config/starship.toml
 USAGE
         exit 0
@@ -345,7 +433,7 @@ USAGE
   # Check dependencies
   check_dependencies
   
-  log_info "Installing configuration for both Fish and Zsh shells"
+  log_info "Installing configuration for Fish, Zsh, and Bash shells"
   
   # Detect OS and architecture
   local OS=$(uname -s)
@@ -398,7 +486,10 @@ USAGE
     printf "  • direnv     - Per-project environment variables\n"
     printf "  • zoxide     - Smarter cd command (z/zi)\n"
     printf "  • atuin      - Better shell history with sync\n"
+    printf "  • foundry    - Ethereum development toolkit\n"
     printf "  • And more...\n"
+    printf "\n"
+    log_info "[DRY RUN] Would install Bun via official installer (curl -fsSL https://bun.sh/install | bash)"
     printf "\n"
   else
     # Install or update Homebrew
@@ -422,28 +513,32 @@ USAGE
       "zsh-syntax-highlighting"
       "zsh-autosuggestions"
       "zsh-completions"
-      # Common tools
-      "starship"       # Modern prompt
-      "bat"            # Better cat
-      "chafa"          # Terminal graphics
-      "hexyl"          # Hex viewer
-      "fd"             # Better find
-      "ripgrep"        # Better grep
-      "git-delta"      # Better git diff
-      "procs"          # Better ps
-      "broot"          # Better tree
-      "neovim"         # Neovim editor
-      "luarocks"       # Lua package manager for Neovim
-      "tree-sitter"    # Parser generator for Neovim
-      "eza"            # Better ls (exa replacement)
-      "fnm"            # Fast Node.js version manager
-      "1password-cli"  # 1Password CLI
+      # Core tools from shell configs
+      "starship"       # Modern prompt (used in 70-prompt.bash)
+      "bat"            # Better cat (used in 20-fzf.bash for preview)
+      "eza"            # Better ls (used in 10-aliases.bash)
+      "fd"             # Better find (used in 20-fzf.bash)
+      "ripgrep"        # Better grep (rg command)
+      "fzf"            # Fuzzy finder (20-fzf.bash)
+      "direnv"         # Per-project environment variables (60-modern-tools.bash)
+      "zoxide"         # Smarter cd command (60-modern-tools.bash)
+      "atuin"          # Better shell history (60-modern-tools.bash)
+      "fnm"            # Fast Node.js version manager (10-node.bash)
+      "1password-cli"  # 1Password CLI (11-1password.bash)
+      "vibetunnel"     # VibeTunnel CLI tool (vt command, used in 32-claude-function.bash)
+      # Additional modern tools
+      "neovim"         # Neovim editor (nvim in aliases)
       "lazygit"        # Terminal UI for git
       "lazydocker"     # Terminal UI for docker
-      "fzf"            # Fuzzy finder
-      "direnv"         # Per-project environment variables
-      "zoxide"         # Smarter cd command
-      "atuin"          # Better shell history
+      "git-delta"      # Better git diff
+      "chafa"          # Terminal graphics
+      "hexyl"          # Hex viewer
+      "procs"          # Better ps
+      "broot"          # Better tree
+      "luarocks"       # Lua package manager for Neovim
+      "tree-sitter"    # Parser generator for Neovim
+      # Development tools
+      "foundry"        # Ethereum development toolkit
     )
     
     for tool in "${TOOLS[@]}"; do
@@ -467,6 +562,18 @@ USAGE
         log_warning "Could not start atuin service automatically"
         log_info "This is normal on some macOS versions. Atuin will still work in your shell."
       fi
+    fi
+    
+    # Install Bun using official installer
+    log_info "Installing Bun..."
+    if command -v bun &> /dev/null; then
+      log_success "Bun is already installed"
+      log_info "Updating Bun to latest version..."
+      bun upgrade
+    else
+      log_info "Installing Bun via official installer..."
+      curl -fsSL https://bun.sh/install | bash
+      log_success "Bun installed successfully"
     fi
   fi
   
@@ -504,6 +611,10 @@ USAGE
     # Create Zsh config directories
     log_info "Creating Zsh configuration directories..."
     mkdir -p ~/.config/zsh/conf.d
+    
+    # Create Bash config directories
+    log_info "Creating Bash configuration directories..."
+    mkdir -p ~/.config/bash/conf.d
     
     # Create Starship directory
     mkdir -p ~/.config
@@ -642,9 +753,10 @@ EOF
       printf "\n"
     fi
     
-    # Install configurations for both shells
+    # Install configurations for all shells
     install_fish_config "$config_base" "$force_overwrite" "$dry_run"
     install_zsh_config "$config_base" "$force_overwrite" "$dry_run"
+    install_bash_config "$config_base" "$force_overwrite" "$dry_run"
     
     # Install Starship for any shell choice
     install_starship_config "$config_base" "$force_overwrite" "$dry_run"
@@ -701,7 +813,7 @@ EOF
 {
   "version": "1.0",
   "installed": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
-  "shell": "both",
+  "shell": "fish,zsh,bash",
   "source": "$repo_root",
   "configurations": [
 EOF
@@ -709,6 +821,9 @@ EOF
     echo '    "~/.config/fish/",' >> "$manifest"
     echo '    "~/.zshrc",' >> "$manifest"
     echo '    "~/.config/zsh/",' >> "$manifest"
+    echo '    "~/.bashrc",' >> "$manifest"
+    echo '    "~/.bash_profile",' >> "$manifest"
+    echo '    "~/.config/bash/",' >> "$manifest"
     echo '    "~/.config/nvim/",' >> "$manifest"
     echo '    "~/.config/starship.toml"' >> "$manifest"
     
@@ -716,7 +831,8 @@ EOF
   ],
   "tools": [
     "starship", "bat", "eza", "ripgrep", "fd", "fzf",
-    "lazygit", "lazydocker", "fnm", "direnv", "zoxide", "atuin"
+    "lazygit", "lazydocker", "fnm", "direnv", "zoxide", "atuin",
+    "bun", "foundry"
   ]
 }
 EOF
@@ -734,7 +850,7 @@ EOF
   log_success "Shell configuration has been successfully installed!"
   printf "\n"
   
-  # Show instructions for both shells
+  # Show instructions for all shells
   print_color "$CYAN" "To start using your new shell configuration:"
   printf "\n"
   print_color "$BOLD" "For Fish shell:"
@@ -744,6 +860,10 @@ EOF
   print_color "$BOLD" "For Zsh:"
   printf "  • Start a new session: ${YELLOW}zsh${NC}\n"
   printf "  • Make it default: ${YELLOW}chsh -s $ZSH_PATH${NC}\n"
+  printf "\n"
+  print_color "$BOLD" "For Bash:"
+  printf "  • Start a new session: ${YELLOW}bash${NC}\n"
+  printf "  • Make it default: ${YELLOW}chsh -s /bin/bash${NC}\n"
   printf "\n"
   
   print_color "$CYAN" "Installed tools:"
@@ -760,6 +880,7 @@ EOF
   printf "  • direnv     - Per-project environment variables\n"
   printf "  • zoxide     - Smarter cd command (z/zi)\n"
   printf "  • atuin      - Better shell history with sync\n"
+  printf "  • bun        - Fast JavaScript runtime & toolkit\n"
   printf "  • And more!\n"
   printf "\n"
   
@@ -768,6 +889,9 @@ EOF
   printf "  • ~/.config/fish/conf.d/ (Fish modular configuration)\n"
   printf "  • ~/.zshrc\n"
   printf "  • ~/.config/zsh/conf.d/ (Zsh modular configuration)\n"
+  printf "  • ~/.bashrc\n"
+  printf "  • ~/.bash_profile\n"
+  printf "  • ~/.config/bash/conf.d/ (Bash modular configuration)\n"
   printf "  • ~/.config/nvim/ (LazyVim configuration)\n"
   printf "  • ~/.config/starship.toml\n"
   printf "\n"
