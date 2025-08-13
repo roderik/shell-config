@@ -771,42 +771,59 @@ USAGE
     # Fix Zsh compinit insecure directories
     log_info "Fixing Zsh completion directory permissions..."
     
-    # Fix permissions for Zsh directories to prevent compinit warnings
+    # First, fix common Homebrew directories that often have permission issues
     # This handles "compinit: insecure directories" errors
-    if [ -d /usr/local/share/zsh ]; then
-      # Intel Mac
-      compaudit 2>/dev/null | xargs -I {} sudo chmod 755 {} 2>/dev/null || true
-      sudo chmod 755 /usr/local/share/zsh 2>/dev/null || true
-      sudo chmod 755 /usr/local/share/zsh/site-functions 2>/dev/null || true
-    fi
-    
-    if [ -d /opt/homebrew/share/zsh ]; then
-      # Apple Silicon Mac
-      compaudit 2>/dev/null | xargs -I {} sudo chmod 755 {} 2>/dev/null || true
+    if [ -d /opt/homebrew ]; then
+      # Apple Silicon Mac - fix parent directories first
+      sudo chmod 755 /opt/homebrew/share 2>/dev/null || true
       sudo chmod 755 /opt/homebrew/share/zsh 2>/dev/null || true
       sudo chmod 755 /opt/homebrew/share/zsh/site-functions 2>/dev/null || true
     fi
     
-    # Also fix user's Zsh directories
+    if [ -d /usr/local/share ]; then
+      # Intel Mac - fix parent directories first
+      sudo chmod 755 /usr/local/share 2>/dev/null || true
+      sudo chmod 755 /usr/local/share/zsh 2>/dev/null || true
+      sudo chmod 755 /usr/local/share/zsh/site-functions 2>/dev/null || true
+    fi
+    
+    # Fix user's Zsh directories
     if [ -d ~/.config/zsh ]; then
       chmod 755 ~/.config/zsh 2>/dev/null || true
       chmod 755 ~/.config/zsh/conf.d 2>/dev/null || true
+      chmod 755 ~/.config/zsh/completions 2>/dev/null || true
     fi
     
-    # Fix any other insecure directories found by compaudit
-    if command -v compaudit &> /dev/null; then
+    # Now run compaudit to find any remaining insecure directories
+    if command -v zsh &> /dev/null; then
+      log_info "Checking for insecure Zsh directories..."
       local insecure_dirs
-      insecure_dirs=$(compaudit 2>/dev/null || true)
+      # Run compaudit through zsh to get the list of insecure directories
+      insecure_dirs=$(zsh -c 'compaudit' 2>/dev/null || true)
+      
       if [ -n "$insecure_dirs" ]; then
-        log_warning "Found insecure Zsh directories, fixing permissions..."
+        log_warning "Found insecure directories, fixing permissions..."
         echo "$insecure_dirs" | while IFS= read -r dir; do
-          if [ -d "$dir" ]; then
-            sudo chmod 755 "$dir" 2>/dev/null || true
-            log_success "Fixed permissions for: $dir"
+          if [ -n "$dir" ] && [ -d "$dir" ]; then
+            # Use sudo for system directories, regular chmod for user directories
+            if [[ "$dir" == /opt/* ]] || [[ "$dir" == /usr/* ]]; then
+              sudo chmod 755 "$dir" 2>/dev/null && log_success "Fixed permissions for: $dir" || log_warning "Could not fix: $dir"
+            else
+              chmod 755 "$dir" 2>/dev/null && log_success "Fixed permissions for: $dir" || log_warning "Could not fix: $dir"
+            fi
           fi
         done
+        
+        # Verify the fix by running compaudit again
+        local remaining_insecure
+        remaining_insecure=$(zsh -c 'compaudit' 2>/dev/null || true)
+        if [ -z "$remaining_insecure" ]; then
+          log_success "All Zsh directories are now secure"
+        else
+          log_warning "Some directories may still need attention. Run 'compaudit' after installation to check."
+        fi
       else
-        log_success "Zsh completion directories are secure"
+        log_success "All Zsh directories are already secure"
       fi
     fi
     
@@ -1125,6 +1142,87 @@ EOF
 }
 EOF
     log_success "Created manifest: $manifest"
+  fi
+  
+  printf "\n"
+  
+  # Validate configuration
+  print_color "$BOLD" "=== Validating Configuration ==="
+  
+  if [ "$dry_run" -eq 0 ]; then
+    local validation_errors=0
+    
+    # Test Zsh configuration
+    if command -v zsh &> /dev/null; then
+      log_info "Validating Zsh configuration..."
+      local zsh_test_output
+      zsh_test_output=$(zsh -c 'source ~/.zshrc 2>&1' 2>&1)
+      if [ $? -eq 0 ] && [ -z "$zsh_test_output" ]; then
+        log_success "Zsh configuration is valid"
+      else
+        log_warning "Zsh configuration has issues:"
+        echo "$zsh_test_output" | head -10
+        validation_errors=$((validation_errors + 1))
+      fi
+    fi
+    
+    # Test Bash configuration  
+    if command -v bash &> /dev/null; then
+      log_info "Validating Bash configuration..."
+      local bash_test_output
+      bash_test_output=$(bash -c 'source ~/.bashrc 2>&1' 2>&1)
+      if [ $? -eq 0 ] && [[ ! "$bash_test_output" =~ "error" ]]; then
+        log_success "Bash configuration is valid"
+      else
+        if [[ -n "$bash_test_output" ]] && [[ "$bash_test_output" =~ "error" ]]; then
+          log_warning "Bash configuration has issues:"
+          echo "$bash_test_output" | grep -i error | head -5
+          validation_errors=$((validation_errors + 1))
+        else
+          log_success "Bash configuration is valid"
+        fi
+      fi
+    fi
+    
+    # Test Fish configuration
+    if command -v fish &> /dev/null; then
+      log_info "Validating Fish configuration..."
+      local fish_test_output
+      fish_test_output=$(fish -c 'source ~/.config/fish/config.fish 2>&1' 2>&1)
+      if [ $? -eq 0 ] && [[ ! "$fish_test_output" =~ "error" ]]; then
+        log_success "Fish configuration is valid"
+      else
+        if [[ -n "$fish_test_output" ]] && [[ "$fish_test_output" =~ "error" ]]; then
+          log_warning "Fish configuration has issues:"
+          echo "$fish_test_output" | grep -i error | head -5
+          validation_errors=$((validation_errors + 1))
+        else
+          log_success "Fish configuration is valid"
+        fi
+      fi
+    fi
+    
+    # Check for common issues
+    if command -v zsh &> /dev/null; then
+      log_info "Checking for Zsh compinit issues..."
+      local compaudit_output
+      compaudit_output=$(zsh -c 'compaudit' 2>&1)
+      if [ -z "$compaudit_output" ]; then
+        log_success "No insecure directories found"
+      else
+        log_warning "Insecure directories still exist:"
+        echo "$compaudit_output"
+        log_info "Run 'sudo chmod 755' on the directories listed above"
+        validation_errors=$((validation_errors + 1))
+      fi
+    fi
+    
+    if [ $validation_errors -eq 0 ]; then
+      log_success "All configurations validated successfully!"
+    else
+      log_warning "Some configuration issues were detected. They may not affect normal usage."
+      log_info "You can check the messages above for details."
+    fi
   fi
   
   printf "\n"

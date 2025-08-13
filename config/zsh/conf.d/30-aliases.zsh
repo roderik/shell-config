@@ -67,7 +67,6 @@ alias lzg='lazygit'
 alias lzd='lazydocker'
 alias ff='fzf --preview "bat --color=always {}"'
 alias cdi='zi'  # zoxide interactive
-alias claude='claude --skip-permissions'
 
 # Common operations
 alias ..='cd ..'
