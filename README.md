@@ -1,28 +1,28 @@
 # Shell Config
 
-Modern shell setup with Fish, powerful CLI tools, and professional development environment configurations.
+Modern tri-shell configuration with Fish, Zsh, and Bash support, featuring powerful CLI tools and professional development environment.
 
 ## Features
 
-### 🐚 Fish Shell Environment
+### 🐚 Triple Shell Support
 
-- **User-Friendly Shell**: Interactive shell with autosuggestions and intelligent tab completion
-- **Web-Based Configuration**: Built-in `fish_config` for easy customization
-- **Smart History**: Searchable command history with arrow key navigation
-- **Abbreviations**: Git shortcuts that expand on space for faster workflow
+- **Fish Shell**: Interactive shell with autosuggestions and intelligent tab completion
+- **Zsh Shell**: Enhanced with plugins for syntax highlighting and autosuggestions
+- **Bash Shell**: Modern Bash with comprehensive modular configuration
+- **Unified Experience**: Consistent aliases, functions, and tools across all shells
 
 ### ⭐ Starship Prompt
 
 - **Context-Aware**: Shows git status, package versions, execution time
 - **Fast Performance**: Minimal latency with asynchronous rendering
 - **Beautiful Theme**: Pre-configured Catppuccin Macchiato theme
-- **Cross-Shell**: Works with Fish, Bash, and Zsh
+- **Cross-Shell**: Works seamlessly with Fish, Bash, and Zsh
 
 ### 📝 Neovim with LazyVim
 
 - **Modern IDE Features**: LSP, treesitter, and telescope integration
 - **LazyVim Config**: Pre-configured with sensible defaults
-- **Omarchy Customizations**: Enhanced with Basecamp's Omarchy theme and settings
+- **Catppuccin Theme**: Beautiful macchiato color scheme
 - **Plugin Management**: Lazy loading for fast startup
 - **Relative Numbers Disabled**: Clean line number display
 
@@ -46,21 +46,25 @@ Modern shell setup with Fish, powerful CLI tools, and professional development e
 | **zoxide**     | Smarter directory navigation                 | `cd`      |
 | **atuin**      | Better shell history with sync               | -         |
 | **direnv**     | Per-project environment variables            | -         |
+| **vibetunnel** | VibeTunnel CLI (vt command)                  | -         |
+| **1password**  | 1Password CLI integration                    | -         |
 
 ### 🎯 Developer Experience
 
-- **Smart Aliases**: Pre-configured shortcuts for common tasks
-- **Git Abbreviations**: Expand on space for faster git workflow
-- **Environment Variables**: Optimized for Node.js and AI assistant development
-- **Idempotent Setup**: Run multiple times to update configuration
+- **Modular Configuration**: Clean `conf.d/` structure for all shells
+- **Smart Aliases**: Consistent shortcuts across all shells
+- **Git Integration**: Comprehensive git shortcuts and functions
+- **Claude Function**: Smart Claude Code wrapper with auto-detection
+- **Docker Functions**: Helpful Docker management utilities
+- **Environment Variables**: Optimized for Node.js and AI development
 
 ## Quick Install
 
 ### Basic One-liner
 
 ```bash
-# Default installation
-curl -sL https://raw.githubusercontent.com/roderik/shell-config/main/setup-fish.sh | bash
+# Install complete tri-shell configuration
+curl -sL https://raw.githubusercontent.com/roderik/shell-config/main/install.sh | bash
 ```
 
 ### Clone and Install
@@ -68,7 +72,15 @@ curl -sL https://raw.githubusercontent.com/roderik/shell-config/main/setup-fish.
 ```bash
 git clone https://github.com/roderik/shell-config.git
 cd shell-config
-./setup-fish.sh
+./install.sh
+```
+
+### Installation Options
+
+```bash
+./install.sh --help       # Show help
+./install.sh --dry-run    # Preview changes without installing
+./install.sh --force      # Overwrite existing configurations
 ```
 
 ## Installation Process
@@ -76,24 +88,84 @@ cd shell-config
 The setup script performs the following steps:
 
 1. **Installs Homebrew** (if not present) - macOS package manager
-2. **Installs both shells** - Latest Zsh and Fish from Homebrew
-3. **Installs Zsh plugins** - Syntax highlighting, autosuggestions, completions
-4. **Installs modern development tools** via Homebrew (including Neovim)
-5. **Configures Fish** with aliases, completions, and environment setup
-6. **Configures Zsh** with modular conf.d structure
-7. **Configures Neovim** with LazyVim starter configuration
-8. **Configures Starship** with beautiful, informative prompt for both shells
+2. **Installs all three shells** - Fish, Zsh, and Bash with enhancements
+3. **Installs shell plugins** - Syntax highlighting, autosuggestions, completions
+4. **Installs modern development tools** via Homebrew
+5. **Configures Fish** with modular `conf.d/` structure
+6. **Configures Zsh** with comprehensive modular configuration
+7. **Configures Bash** with modern features and modular setup
+8. **Configures Neovim** with LazyVim and Catppuccin theme
+9. **Configures Starship** prompt for all three shells
+10. **Installs Bun** JavaScript runtime and toolkit
 
-## Configuration Locations
+## Configuration Structure
 
-Configurations are installed to:
+### Modular Organization
 
-- **Fish Shell**: `~/.config/fish/config.fish`
-- **Fish Modules**: `~/.config/fish/conf.d/`
-- **Zsh Shell**: `~/.zshrc`
-- **Zsh Modules**: `~/.config/zsh/conf.d/`
+Each shell uses a modular `conf.d/` structure with numbered files for predictable loading order:
+
+```
+config/
+├── bash/
+│   ├── .bashrc                       # Main Bash configuration
+│   ├── .bash_profile                 # Bash profile
+│   └── conf.d/
+│       ├── 00-environment.bash       # Environment variables
+│       ├── 00-homebrew.bash          # Homebrew setup
+│       ├── 02-paths.bash             # PATH configuration
+│       ├── 10-aliases.bash           # Command aliases
+│       ├── 10-node.bash              # Node.js (fnm) setup
+│       ├── 11-1password.bash         # 1Password CLI
+│       ├── 20-functions.bash         # Utility functions
+│       ├── 20-fzf.bash               # FZF configuration
+│       ├── 30-abbreviations.bash     # Git shortcuts
+│       ├── 30-git-functions.bash    # Git utilities
+│       ├── 31-docker-functions.bash # Docker utilities
+│       ├── 32-claude-function.bash  # Claude wrapper
+│       ├── 40-completions.bash      # Shell completions
+│       ├── 60-modern-tools.bash     # Modern CLI tools
+│       └── 70-prompt.bash           # Starship prompt
+├── zsh/
+│   ├── .zshrc                       # Main Zsh configuration
+│   └── conf.d/
+│       ├── 00-environment.zsh       # Environment setup
+│       ├── 00-homebrew.zsh          # Homebrew configuration
+│       ├── 02-paths.zsh             # PATH setup
+│       ├── 10-node.zsh              # Node.js management
+│       ├── 11-1password.zsh         # 1Password CLI
+│       ├── 20-functions.zsh         # Utility functions
+│       ├── 20-fzf.zsh               # FZF integration
+│       ├── 30-aliases.zsh           # Command aliases
+│       ├── 30-abbreviations.zsh     # Git shortcuts
+│       ├── 30-git-functions.zsh    # Git utilities
+│       ├── 31-docker-functions.zsh # Docker helpers
+│       ├── 32-claude-function.zsh  # Claude wrapper
+│       ├── 40-completions.zsh      # Completions
+│       ├── 60-modern-tools.zsh     # Tool integrations
+│       └── 70-prompt.zsh           # Starship setup
+├── fish/
+│   ├── config.fish                  # Main Fish configuration
+│   └── conf.d/
+│       ├── 00-environment.fish      # Environment variables
+│       ├── 10-starship.fish         # Starship prompt
+│       ├── 20-functions.fish        # Utility functions
+│       ├── 30-abbreviations.fish    # Git abbreviations
+│       ├── 30-git-functions.fish   # Git utilities
+│       ├── 31-docker-functions.fish # Docker helpers
+│       └── 32-claude-function.fish # Claude wrapper
+└── starship/
+    └── starship.toml                # Starship configuration
+```
+
+### Configuration Locations
+
+After installation, configurations are placed at:
+
+- **Fish**: `~/.config/fish/` (config.fish and conf.d/)
+- **Zsh**: `~/.zshrc` and `~/.config/zsh/conf.d/`
+- **Bash**: `~/.bashrc`, `~/.bash_profile`, and `~/.config/bash/conf.d/`
 - **Neovim**: `~/.config/nvim/` (LazyVim configuration)
-- **Starship Prompt**: `~/.config/starship.toml`
+- **Starship**: `~/.config/starship.toml`
 
 ## What Gets Configured
 
@@ -107,119 +179,148 @@ EDITOR=nvim                           # Default editor
 VISUAL=nvim                           # Visual editor
 ```
 
-### Aliases
+### Enhanced Aliases (All Shells)
 
 #### File Operations
 
-- `ls` → `eza` (enhanced listing)
-- `ll` → `eza -alh` (detailed listing)
-- `la` → `eza -a` (all files)
-- `cat` → `bat` (syntax highlighted viewing)
+- `ls` → `eza -lh --group-directories-first`
+- `l` → `eza --git-ignore --group-directories-first`
+- `ll` → `eza --all --header --long --group-directories-first`
+- `llm` → `eza --all --header --long --sort=modified --group-directories-first`
+- `la` → `eza -lbhHigUmuSa`
+- `lt` → `eza --tree`
+- `cat` → `bat`
+- `vim` → `nvim`
 
-#### Git Shortcuts
+#### Git Shortcuts (60+ aliases)
 
 - `g` → `git`
 - `ga` → `git add`
-- `gcm` → `git commit -m`
+- `gaa` → `git add --all`
+- `gc` → `git commit --verbose`
+- `gcm` → `git commit --message`
+- `gco` → `git checkout`
 - `gp` → `git push`
-- `gpu` → `git pull`
-- `gst` → `git status`
+- `gl` → `git pull`
+- `gs` → `git status`
+- And many more...
 
 #### Tool Shortcuts
 
 - `lzg` → `lazygit`
 - `lzd` → `lazydocker`
 - `ff` → `fzf --preview 'bat --color=always {}'`
-- `cd` → `zoxide` (smarter cd)
-- `cdi` → `zoxide interactive`
-- `claude` → `claude --skip-permissions`
+- `cdi` → `zi` (zoxide interactive)
+- `claude` → Smart wrapper with auto-detection
 
-### Git Abbreviations
+#### Docker Shortcuts
 
-Fish abbreviations that expand on space:
+- `d` → `docker`
+- `dc` → `docker compose`
+- `dps` → `docker ps`
+- `dpsa` → `docker ps -a`
 
-```fish
-g     → git
-ga    → git add
-gaa   → git add --all
-gb    → git branch
-gco   → git checkout
-gcm   → git commit -m
-gd    → git diff
-gp    → git push
-gpu   → git pull
-gst   → git status
+### Special Functions
+
+#### Claude Function
+
+Smart wrapper that auto-detects project settings:
+
+```bash
+# Automatically uses .claude/AUTO_PLAN_MODE.txt if present
+# Falls back to vt (VibeTunnel) if available
+claude [args]
 ```
 
-And many more available abbreviations for common git operations.
+#### Git Functions
+
+- `gclone` - Clone and cd into repository
+- `gprune` - Clean up merged branches
+- `greset` - Reset to origin/main
+- `gundo` - Undo last commit
+
+#### Docker Functions
+
+- `dexec` - Execute command in container
+- `dlogs` - View container logs
+- `dstop` - Stop all containers
+- `dclean` - Clean unused resources
+
+### Modern Tool Integrations
+
+- **direnv**: Automatic per-project environment variables
+- **zoxide**: Smart directory jumping with `z` command
+- **atuin**: Enhanced shell history with search and sync
+- **fzf**: Fuzzy finder integration with preview
+- **fnm**: Fast Node.js version management
 
 ## Post-Installation
 
-After installation, both shells are ready to use:
+### Choose Your Shell
 
-### Using Fish Shell
+After installation, all three shells are ready to use:
 
-1. **Start a Fish session**:
+#### Fish Shell
 
-   ```bash
-   fish
-   ```
+```bash
+# Start a Fish session
+fish
 
-2. **Make Fish your default shell** (optional):
-   ```bash
-   chsh -s /opt/homebrew/bin/fish  # Apple Silicon
-   chsh -s /usr/local/bin/fish      # Intel Mac
-   ```
+# Make Fish your default shell (optional)
+chsh -s /opt/homebrew/bin/fish  # Apple Silicon
+chsh -s /usr/local/bin/fish      # Intel Mac
+```
 
-### Using Zsh
+#### Zsh
 
-1. **Start a Zsh session**:
+```bash
+# Start a Zsh session
+zsh
 
-   ```bash
-   zsh
-   ```
+# Make Zsh your default shell (optional)
+chsh -s /opt/homebrew/bin/zsh   # Apple Silicon
+chsh -s /usr/local/bin/zsh       # Intel Mac
+```
 
-2. **Make Zsh your default shell** (optional):
-   ```bash
-   chsh -s /opt/homebrew/bin/zsh   # Apple Silicon
-   chsh -s /usr/local/bin/zsh       # Intel Mac
-   ```
+#### Bash
 
-### Explore the features:
+```bash
+# Start a Bash session
+bash
 
-- Try typing a command and pressing Tab for completions
-- Use up/down arrows to search command history
-- In Fish: Run `fish_config` for web-based configuration
-- In Zsh: Edit `~/.config/zsh/conf.d/` files for customization
+# Make Bash your default shell (optional)
+chsh -s /bin/bash
+```
+
+### First Launch
+
+1. **Neovim**: First launch will install all LazyVim plugins automatically
+2. **Atuin**: Run `atuin register` to enable history sync (optional)
+3. **Direnv**: Create `.envrc` files in projects for automatic environment setup
 
 ## Customization
 
-### Modifying Configuration
+### Adding Personal Configuration
 
-Edit your Fish configuration:
+Each shell supports local overrides:
 
-```fish
-nano ~/.config/fish/config.fish
+```bash
+# Fish
+echo "alias myalias='mycommand'" >> ~/.config/fish/conf.d/99-local.fish
+
+# Zsh
+echo "alias myalias='mycommand'" >> ~/.config/zsh/conf.d/99-local.zsh
+
+# Bash
+echo "alias myalias='mycommand'" >> ~/.config/bash/conf.d/99-local.bash
 ```
 
-Edit your Starship prompt:
+### Modifying Starship Prompt
 
-```fish
-nano ~/.config/starship.toml
-```
+Edit the Starship configuration:
 
-### Adding Custom Functions
-
-Create custom Fish functions:
-
-```fish
-# Create a new function
-function myfunction
-    echo "Hello from my function!"
-end
-
-# Save it permanently
-funcsave myfunction
+```bash
+nvim ~/.config/starship.toml
 ```
 
 ### Updating Tools
@@ -232,9 +333,9 @@ brew update && brew upgrade
 
 ## Troubleshooting
 
-### Fish not found after installation
+### Shell not found after installation
 
-Make sure Homebrew's bin directory is in your PATH:
+Ensure Homebrew's bin directory is in your PATH:
 
 ```bash
 echo 'eval "$(/opt/homebrew/bin/brew shellenv)"' >> ~/.zprofile
@@ -246,47 +347,52 @@ source ~/.zprofile
 If you get permission errors when changing your shell:
 
 ```bash
-# Add Fish to allowed shells manually
+# Add shell to allowed shells manually
 sudo sh -c "echo $(which fish) >> /etc/shells"
+sudo sh -c "echo $(which zsh) >> /etc/shells"
 ```
 
 ### Tools not working
 
-Ensure Fish is loading the configuration:
+Reload your shell configuration:
 
-```fish
+```bash
+# Fish
 source ~/.config/fish/config.fish
-```
 
-## Project Structure
+# Zsh
+source ~/.zshrc
 
-```
-shell-config/
-├── setup-fish.sh              # Main installation script
-├── config/
-│   ├── config.fish           # Fish shell configuration
-│   └── starship.toml         # Starship prompt theme
-├── functions/
-│   └── wt.fish              # Git worktree manager function
-└── README.md                # This file
+# Bash
+source ~/.bashrc
 ```
 
 ## Uninstalling
 
-To remove Fish shell and revert to your previous shell:
+To uninstall, use the provided uninstall script:
 
 ```bash
-# Change back to bash or zsh
-chsh -s /bin/bash  # or /bin/zsh
+./uninstall.sh
+```
 
-# Remove Fish configuration
+Or manually remove configurations:
+
+```bash
+# Change back to default shell
+chsh -s /bin/bash
+
+# Remove configurations
 rm -rf ~/.config/fish
+rm -rf ~/.config/zsh
+rm -rf ~/.config/bash
+rm -f ~/.zshrc
+rm -f ~/.bashrc
+rm -f ~/.bash_profile
+rm -rf ~/.config/nvim
+rm -f ~/.config/starship.toml
 
-# Uninstall Fish (optional)
-brew uninstall fish
-
-# Remove other tools (optional)
-brew uninstall starship bat eza ripgrep fd fzf # etc...
+# Uninstall tools (optional)
+brew uninstall fish zsh starship bat eza ripgrep fd fzf
 ```
 
 ## Requirements
