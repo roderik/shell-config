@@ -707,6 +707,18 @@ USAGE
       log_success "GitHub CLI completions generated"
     fi
     
+    # Install Claude Code CLI
+    log_info "Installing Claude Code CLI..."
+    if command -v claude &> /dev/null; then
+      log_success "Claude Code is already installed"
+      # Note: claude-code doesn't have an update command built-in
+      # Users need to reinstall to update
+    else
+      log_info "Installing Claude Code via official installer..."
+      curl -fsSL https://claude.ai/install.sh | bash -s latest
+      log_success "Claude Code installed successfully"
+    fi
+    
     # Install Bun using official installer
     log_info "Installing Bun..."
     if command -v bun &> /dev/null; then
