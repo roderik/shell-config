@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # Command Aliases
 # Modern replacements and shortcuts for common commands
 
@@ -17,4 +18,4 @@ alias n='nvim'
 alias vim='nvim'
 
 # FZF preview
-alias ff="fzf --preview 'bat --style=numbers --color=always {}'"
+alias ff="fzf --preview 'bat --style=numbers --color=always '"

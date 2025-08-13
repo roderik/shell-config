@@ -201,6 +201,7 @@ install_fish_config() {
   fi
 }
 
+<<<<<<< HEAD
 # Install Bash configuration
 install_bash_config() {
   local config_base="$1"
@@ -288,6 +289,9 @@ install_bash_config() {
   fi
 }
 
+||||||| 3642a8e
+=======
+>>>>>>> origin/main
 # Install Zsh configuration
 install_zsh_config() {
   local config_base="$1"
@@ -405,7 +409,13 @@ main() {
         cat <<'USAGE'
 Usage: ./install.sh [OPTIONS]
 
+<<<<<<< HEAD
 Installs modern shell configuration for Fish, Zsh, and Bash shells with development tools.
+||||||| 3642a8e
+Installs modern shell configuration for Fish shell and development tools.
+=======
+Installs modern shell configuration for both Fish and Zsh shells with development tools.
+>>>>>>> origin/main
 
 Options:
   --force          Overwrite existing configurations
@@ -415,7 +425,13 @@ Options:
 Configuration is installed to:
   - Fish: ~/.config/fish/
   - Zsh: ~/.config/zsh/ and ~/.zshrc
+<<<<<<< HEAD
   - Bash: ~/.config/bash/, ~/.bashrc and ~/.bash_profile
+||||||| 3642a8e
+  - ~/.config/fish/
+  - ~/.config/starship/
+=======
+>>>>>>> origin/main
   - Starship: ~/.config/starship.toml
 USAGE
         exit 0
@@ -433,7 +449,12 @@ USAGE
   # Check dependencies
   check_dependencies
   
+<<<<<<< HEAD
   log_info "Installing configuration for Fish, Zsh, and Bash shells"
+||||||| 3642a8e
+=======
+  log_info "Installing configuration for both Fish and Zsh shells"
+>>>>>>> origin/main
   
   # Detect OS and architecture
   local OS=$(uname -s)
@@ -513,6 +534,7 @@ USAGE
       "zsh-syntax-highlighting"
       "zsh-autosuggestions"
       "zsh-completions"
+<<<<<<< HEAD
       # Core tools from shell configs
       "starship"       # Modern prompt (used in 70-prompt.bash)
       "bat"            # Better cat (used in 20-fzf.bash for preview)
@@ -528,6 +550,38 @@ USAGE
       "vibetunnel"     # VibeTunnel CLI tool (vt command, used in 32-claude-function.bash)
       # Additional modern tools
       "neovim"         # Neovim editor (nvim in aliases)
+||||||| 3642a8e
+      "starship"       # Modern prompt
+      "bat"            # Better cat
+      "chafa"          # Terminal graphics
+      "hexyl"          # Hex viewer
+      "fd"             # Better find
+      "ripgrep"        # Better grep
+      "git-delta"      # Better git diff
+      "procs"          # Better ps
+      "broot"          # Better tree
+      "nvim"           # Neovim
+      "eza"            # Better ls (exa replacement)
+      "fnm"            # Fast Node.js version manager
+      "1password-cli"  # 1Password CLI
+=======
+      # Common tools
+      "starship"       # Modern prompt
+      "bat"            # Better cat
+      "chafa"          # Terminal graphics
+      "hexyl"          # Hex viewer
+      "fd"             # Better find
+      "ripgrep"        # Better grep
+      "git-delta"      # Better git diff
+      "procs"          # Better ps
+      "broot"          # Better tree
+      "neovim"         # Neovim editor
+      "luarocks"       # Lua package manager for Neovim
+      "tree-sitter"    # Parser generator for Neovim
+      "eza"            # Better ls (exa replacement)
+      "fnm"            # Fast Node.js version manager
+      "1password-cli"  # 1Password CLI
+>>>>>>> origin/main
       "lazygit"        # Terminal UI for git
       "lazydocker"     # Terminal UI for docker
       "git-delta"      # Better git diff
@@ -612,10 +666,18 @@ USAGE
     log_info "Creating Zsh configuration directories..."
     mkdir -p ~/.config/zsh/conf.d
     
+<<<<<<< HEAD
     # Create Bash config directories
     log_info "Creating Bash configuration directories..."
     mkdir -p ~/.config/bash/conf.d
     
+||||||| 3642a8e
+    # Create config directories
+    log_info "Creating configuration directories..."
+    mkdir -p ~/.config/fish
+    mkdir -p ~/.config/starship
+=======
+>>>>>>> origin/main
     # Create Starship directory
     mkdir -p ~/.config
   fi
@@ -753,10 +815,17 @@ EOF
       printf "\n"
     fi
     
+<<<<<<< HEAD
     # Install configurations for all shells
     install_fish_config "$config_base" "$force_overwrite" "$dry_run"
     install_zsh_config "$config_base" "$force_overwrite" "$dry_run"
     install_bash_config "$config_base" "$force_overwrite" "$dry_run"
+||||||| 3642a8e
+=======
+    # Install configurations for both shells
+    install_fish_config "$config_base" "$force_overwrite" "$dry_run"
+    install_zsh_config "$config_base" "$force_overwrite" "$dry_run"
+>>>>>>> origin/main
     
     # Install Starship for any shell choice
     install_starship_config "$config_base" "$force_overwrite" "$dry_run"
@@ -813,7 +882,12 @@ EOF
 {
   "version": "1.0",
   "installed": "$(date -u +"%Y-%m-%dT%H:%M:%SZ")",
+<<<<<<< HEAD
   "shell": "fish,zsh,bash",
+||||||| 3642a8e
+=======
+  "shell": "both",
+>>>>>>> origin/main
   "source": "$repo_root",
   "configurations": [
 EOF
@@ -821,9 +895,16 @@ EOF
     echo '    "~/.config/fish/",' >> "$manifest"
     echo '    "~/.zshrc",' >> "$manifest"
     echo '    "~/.config/zsh/",' >> "$manifest"
+<<<<<<< HEAD
     echo '    "~/.bashrc",' >> "$manifest"
     echo '    "~/.bash_profile",' >> "$manifest"
     echo '    "~/.config/bash/",' >> "$manifest"
+||||||| 3642a8e
+    "~/.config/fish/config.fish",
+    "~/.config/fish/conf.d/",
+    "~/.config/starship.toml"
+=======
+>>>>>>> origin/main
     echo '    "~/.config/nvim/",' >> "$manifest"
     echo '    "~/.config/starship.toml"' >> "$manifest"
     
@@ -831,8 +912,15 @@ EOF
   ],
   "tools": [
     "starship", "bat", "eza", "ripgrep", "fd", "fzf",
+<<<<<<< HEAD
     "lazygit", "lazydocker", "fnm", "direnv", "zoxide", "atuin",
     "bun", "foundry"
+||||||| 3642a8e
+    "fish", "starship", "bat", "eza", "ripgrep", "fd", "fzf",
+    "lazygit", "lazydocker", "fnm", "direnv", "zoxide", "atuin"
+=======
+    "lazygit", "lazydocker", "fnm", "direnv", "zoxide", "atuin"
+>>>>>>> origin/main
   ]
 }
 EOF
@@ -850,7 +938,16 @@ EOF
   log_success "Shell configuration has been successfully installed!"
   printf "\n"
   
+<<<<<<< HEAD
   # Show instructions for all shells
+||||||| 3642a8e
+  # Show instructions
+  print_color "$CYAN" "To start using Fish shell:"
+  printf "  1. Change your default shell:\n"
+  printf "     ${YELLOW}chsh -s $FISH_PATH${NC}\n"
+=======
+  # Show instructions for both shells
+>>>>>>> origin/main
   print_color "$CYAN" "To start using your new shell configuration:"
   printf "\n"
   print_color "$BOLD" "For Fish shell:"
@@ -860,10 +957,16 @@ EOF
   print_color "$BOLD" "For Zsh:"
   printf "  • Start a new session: ${YELLOW}zsh${NC}\n"
   printf "  • Make it default: ${YELLOW}chsh -s $ZSH_PATH${NC}\n"
+<<<<<<< HEAD
   printf "\n"
   print_color "$BOLD" "For Bash:"
   printf "  • Start a new session: ${YELLOW}bash${NC}\n"
   printf "  • Make it default: ${YELLOW}chsh -s /bin/bash${NC}\n"
+||||||| 3642a8e
+  printf "  2. Start a new Fish shell session:\n"
+  printf "     ${YELLOW}$FISH_PATH${NC}\n"
+=======
+>>>>>>> origin/main
   printf "\n"
   
   print_color "$CYAN" "Installed tools:"
@@ -889,9 +992,14 @@ EOF
   printf "  • ~/.config/fish/conf.d/ (Fish modular configuration)\n"
   printf "  • ~/.zshrc\n"
   printf "  • ~/.config/zsh/conf.d/ (Zsh modular configuration)\n"
+<<<<<<< HEAD
   printf "  • ~/.bashrc\n"
   printf "  • ~/.bash_profile\n"
   printf "  • ~/.config/bash/conf.d/ (Bash modular configuration)\n"
+||||||| 3642a8e
+  printf "  • ~/.config/fish/conf.d/ (modular configuration)\n"
+=======
+>>>>>>> origin/main
   printf "  • ~/.config/nvim/ (LazyVim configuration)\n"
   printf "  • ~/.config/starship.toml\n"
   printf "\n"
