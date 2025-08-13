@@ -18,10 +18,19 @@ Modern shell setup with Fish, powerful CLI tools, and professional development e
 - **Beautiful Theme**: Pre-configured Catppuccin Macchiato theme
 - **Cross-Shell**: Works with Fish, Bash, and Zsh
 
+### 📝 Neovim with LazyVim
+
+- **Modern IDE Features**: LSP, treesitter, and telescope integration
+- **LazyVim Config**: Pre-configured with sensible defaults
+- **Omarchy Customizations**: Enhanced with Basecamp's Omarchy theme and settings
+- **Plugin Management**: Lazy loading for fast startup
+- **Relative Numbers Disabled**: Clean line number display
+
 ### 🛠️ Modern CLI Tools
 
 | Tool           | Description                                  | Replaces  |
 | -------------- | -------------------------------------------- | --------- |
+| **neovim**     | Modern Vim with LazyVim configuration        | `vim`     |
 | **bat**        | Syntax highlighting and Git integration      | `cat`     |
 | **eza**        | Modern listing with icons and git status     | `ls`      |
 | **ripgrep**    | Ultra-fast text search                       | `grep`    |
@@ -51,14 +60,14 @@ Modern shell setup with Fish, powerful CLI tools, and professional development e
 
 ```bash
 # Default installation
-curl -sL https://raw.githubusercontent.com/roderik/wt/main/setup-fish.sh | bash
+curl -sL https://raw.githubusercontent.com/roderik/shell-config/main/setup-fish.sh | bash
 ```
 
 ### Clone and Install
 
 ```bash
-git clone https://github.com/roderik/wt.git
-cd wt
+git clone https://github.com/roderik/shell-config.git
+cd shell-config
 ./setup-fish.sh
 ```
 
@@ -67,19 +76,24 @@ cd wt
 The setup script performs the following steps:
 
 1. **Installs Homebrew** (if not present) - macOS package manager
-2. **Installs Fish shell** and adds it to allowed shells
-3. **Installs modern development tools** via Homebrew
-4. **Configures Fish** with aliases, completions, and environment setup
-5. **Configures Starship** with beautiful, informative prompt
-6. **Installs wt** (git worktree manager) automatically
+2. **Installs both shells** - Latest Zsh and Fish from Homebrew
+3. **Installs Zsh plugins** - Syntax highlighting, autosuggestions, completions
+4. **Installs modern development tools** via Homebrew (including Neovim)
+5. **Configures Fish** with aliases, completions, and environment setup
+6. **Configures Zsh** with modular conf.d structure
+7. **Configures Neovim** with LazyVim starter configuration
+8. **Configures Starship** with beautiful, informative prompt for both shells
 
 ## Configuration Locations
 
 Configurations are installed to:
 
 - **Fish Shell**: `~/.config/fish/config.fish`
+- **Fish Modules**: `~/.config/fish/conf.d/`
+- **Zsh Shell**: `~/.zshrc`
+- **Zsh Modules**: `~/.config/zsh/conf.d/`
+- **Neovim**: `~/.config/nvim/` (LazyVim configuration)
 - **Starship Prompt**: `~/.config/starship.toml`
-- **Fish Functions**: `~/.config/fish/functions/`
 
 ## What Gets Configured
 
@@ -141,25 +155,42 @@ And many more available abbreviations for common git operations.
 
 ## Post-Installation
 
-After installation:
+After installation, both shells are ready to use:
 
-1. **Change your default shell** (optional):
+### Using Fish Shell
 
-   ```bash
-   chsh -s $(which fish)
-   ```
-
-2. **Start a new Fish shell session**:
+1. **Start a Fish session**:
 
    ```bash
    fish
    ```
 
-3. **Explore the features**:
-   - Try typing a command and pressing Tab for completions
-   - Use up/down arrows to search command history
-   - Type `help` to open Fish documentation
-   - Run `fish_config` to customize your setup
+2. **Make Fish your default shell** (optional):
+   ```bash
+   chsh -s /opt/homebrew/bin/fish  # Apple Silicon
+   chsh -s /usr/local/bin/fish      # Intel Mac
+   ```
+
+### Using Zsh
+
+1. **Start a Zsh session**:
+
+   ```bash
+   zsh
+   ```
+
+2. **Make Zsh your default shell** (optional):
+   ```bash
+   chsh -s /opt/homebrew/bin/zsh   # Apple Silicon
+   chsh -s /usr/local/bin/zsh       # Intel Mac
+   ```
+
+### Explore the features:
+
+- Try typing a command and pressing Tab for completions
+- Use up/down arrows to search command history
+- In Fish: Run `fish_config` for web-based configuration
+- In Zsh: Edit `~/.config/zsh/conf.d/` files for customization
 
 ## Customization
 
@@ -266,7 +297,7 @@ brew uninstall starship bat eza ripgrep fd fzf # etc...
 
 ## Contributing
 
-Found an issue or have a suggestion? Please open an issue or submit a PR on the [GitHub repository](https://github.com/roderik/wt).
+Found an issue or have a suggestion? Please open an issue or submit a PR on the [GitHub repository](https://github.com/roderik/shell-config).
 
 ## License
 
@@ -274,5 +305,5 @@ MIT - See [LICENSE](LICENSE) file for details
 
 ## Support
 
-- Issues: [GitHub Issues](https://github.com/roderik/wt/issues)
-- Discussions: [GitHub Discussions](https://github.com/roderik/wt/discussions)
+- Issues: [GitHub Issues](https://github.com/roderik/shell-config/issues)
+- Discussions: [GitHub Discussions](https://github.com/roderik/shell-config/discussions)
