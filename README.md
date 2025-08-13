@@ -409,6 +409,18 @@ Found an issue or have a suggestion? Please open an issue or submit a PR on the 
 
 MIT - See [LICENSE](LICENSE) file for details
 
+## Related Projects
+
+This shell configuration is part of a complete development setup:
+
+- **[Shell Config](https://github.com/roderik/shell-config)** - Modern tri-shell configuration (this repository)
+- **[AI Rules](https://github.com/roderik/ai-rules)** - AI assistant configuration and prompts
+- **[WT](https://github.com/roderik/wt)** - Windows Terminal configuration and themes
+
+## Author
+
+Created by Roderik van der Veer - [Twitter/X: @r0derik](https://x.com/r0derik)
+
 ## Support
 
 - Issues: [GitHub Issues](https://github.com/roderik/shell-config/issues)
