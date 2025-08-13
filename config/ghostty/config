@@ -1,0 +1,82 @@
+# --- Ghostty: tuned by assistant (safe, commented) ---
+# Date: Configuration template
+# Keep this concise and override only non-defaults.
+
+# UI & Theme
+# Use popular built-in themes with auto light/dark switching
+theme = catppuccin-mocha
+# P3 colors and better alpha blending on macOS
+window-colorspace = display-p3
+alpha-blending = linear-corrected
+# Subtle translucency with tasteful blur (macOS supported)
+background-opacity = 0.95
+background-blur = 20
+# Comfortable padding and centered grid
+window-padding-x = 8
+window-padding-y = 6
+window-padding-balance = true
+# Make unfocused splits slightly see-through
+unfocused-split-opacity = 0.85
+# Use bright palette for bold text
+bold-is-bright = true
+
+# Fonts
+# Reset and set preferred fallbacks (first available takes effect)
+font-family = ""
+font-family = "Berkeley Mono"
+font-family = "JetBrainsMono Nerd Font"
+font-family = "SF Mono"
+font-family = "Iosevka"
+font-family = "FiraCode Nerd Font"
+font-family = "Menlo"
+font-family = "Monaco"
+font-size = 12.5
+font-feature = -calt,-liga,-dlig
+
+# Cursor
+cursor-style = bar
+cursor-style-blink = true
+cursor-opacity = 0.9
+
+# Scrollback & images
+scrollback-limit = 100000000
+image-storage-limit = 320000000
+
+# Clipboard & safety
+copy-on-select = true
+clipboard-trim-trailing-spaces = true
+clipboard-paste-protection = true
+
+# Tabs / windows
+window-save-state = always
+window-step-resize = true
+window-new-tab-position = current
+window-theme = auto
+window-vsync = true
+
+# macOS niceties
+macos-titlebar-style = transparent
+macos-window-shadow = true
+macos-option-as-alt = true
+macos-secure-input-indication = true
+
+# Shell integration
+shell-integration = detect
+shell-integration-features = cursor,sudo,title
+term = xterm-ghostty
+
+# Quick terminal (enable with global keybind below)
+quick-terminal-position = top
+quick-terminal-autohide = true
+quick-terminal-animation-duration = 0.15
+quick-terminal-space-behavior = move
+
+# You can reload this file from Ghostty via Cmd+Shift+,
+# or with: keybind = super+shift+comma=reload_config (already default)
+# --- end ---
+
+# Keybindings
+keybind = global:super+shift+space=toggle_quick_terminal
+keybind = shift+enter=text:\n
+
+auto-update-channel = tip
