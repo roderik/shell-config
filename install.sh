@@ -73,16 +73,16 @@ log_info() { printf "${CYAN}${INFO} %s${NC}\n" "$*"; }
 # Display ASCII art with gradient colors
 show_banner() {
   printf "\n"
-  printf "${BLUE}    ███████${CYAN}╗██${GREEN}╗  ██${YELLOW}╗███████${MAGENTA}╗██${RED}╗     ██${BLUE}╗     ${NC}\n"
-  printf "${BLUE}    ██${CYAN}╔════╝██${GREEN}║  ██${YELLOW}║██${MAGENTA}╔════╝██${RED}║     ██${BLUE}║     ${NC}\n"
-  printf "${BLUE}    ███████${CYAN}╗███████${GREEN}║█████${YELLOW}╗  ██${MAGENTA}║     ██${RED}║     ${NC}\n"
-  printf "${BLUE}    ╚════██${CYAN}║██${GREEN}╔══██║██${YELLOW}╔══╝  ██${MAGENTA}║     ██${RED}║     ${NC}\n"
-  printf "${BLUE}    ███████${CYAN}║██${GREEN}║  ██║███████${YELLOW}╗███████${MAGENTA}╗███████${RED}╗${NC}\n"
-  printf "${BLUE}    ╚══════${CYAN}╝╚═${GREEN}╝  ╚═╝╚══════${YELLOW}╝╚══════${MAGENTA}╝╚══════${RED}╝${NC}\n"
+  printf "${BLUE}███████${CYAN}╗██${GREEN}╗  ██${YELLOW}╗███████${MAGENTA}╗██${RED}╗     ██${BLUE}╗     ${NC}\n"
+  printf "${BLUE}██${CYAN}╔════╝██${GREEN}║  ██${YELLOW}║██${MAGENTA}╔════╝██${RED}║     ██${BLUE}║     ${NC}\n"
+  printf "${BLUE}███████${CYAN}╗███████${GREEN}║█████${YELLOW}╗  ██${MAGENTA}║     ██${RED}║     ${NC}\n"
+  printf "${BLUE}╚════██${CYAN}║██${GREEN}╔══██║██${YELLOW}╔══╝  ██${MAGENTA}║     ██${RED}║     ${NC}\n"
+  printf "${BLUE}███████${CYAN}║██${GREEN}║  ██║███████${YELLOW}╗███████${MAGENTA}╗███████${RED}╗${NC}\n"
+  printf "${BLUE}╚══════${CYAN}╝╚═${GREEN}╝  ╚═╝╚══════${YELLOW}╝╚══════${MAGENTA}╝╚══════${RED}╝${NC}\n"
   printf "\n"
-  printf "${BOLD}${MAGENTA}          ╔═════════════════════════════════╗${NC}\n"
-  printf "${BOLD}${CYAN}          ║    Modern Shell Configuration   ║${NC}\n"
-  printf "${BOLD}${MAGENTA}          ╚═════════════════════════════════╝${NC}\n"
+  printf "${BOLD}${MAGENTA}╔═════════════════════════════════╗${NC}\n"
+  printf "${BOLD}${CYAN}║    Modern Shell Configuration   ║${NC}\n"
+  printf "${BOLD}${MAGENTA}╚═════════════════════════════════╝${NC}\n"
   printf "\n"
 }
 
@@ -177,11 +177,19 @@ install_fish_config() {
       # Copy main config
       if [ -f "$config_base/fish/config.fish" ]; then
         local target_file=~/.config/fish/config.fish
-        if [ -f "$target_file" ] && [ "$force_overwrite" -eq 0 ]; then
-          backup_file "$target_file"
+        if [ -f "$target_file" ]; then
+          # Check if the existing file is different from our new one
+          if ! cmp -s "$config_base/fish/config.fish" "$target_file"; then
+            backup_file "$target_file"
+            cp "$config_base/fish/config.fish" "$target_file"
+            log_success "  → config.fish updated (old version backed up)"
+          else
+            log_success "  → config.fish already up to date"
+          fi
+        else
+          cp "$config_base/fish/config.fish" "$target_file"
+          log_success "  → config.fish installed"
         fi
-        cp "$config_base/fish/config.fish" "$target_file"
-        log_success "  → config.fish installed"
       fi
       
       # Copy conf.d modules
@@ -651,6 +659,19 @@ USAGE
         sudo sudo-touchid
         log_success "TouchID for sudo enabled"
       fi
+      
+      # Start the sudo-touchid service to persist across updates
+      log_info "Starting sudo-touchid service..."
+      if "$BREW_PATH" services list | grep -q "sudo-touchid.*started"; then
+        log_success "sudo-touchid service is already running"
+      else
+        if sudo "$BREW_PATH" services start artginzburg/tap/sudo-touchid 2>/dev/null; then
+          log_success "sudo-touchid service started (persists TouchID for sudo across macOS updates)"
+        else
+          log_warning "Could not start sudo-touchid service automatically"
+          log_info "You can manually start it with: sudo brew services start artginzburg/tap/sudo-touchid"
+        fi
+      fi
     fi
     
     # Configure kubectx/kubens
@@ -1004,15 +1025,33 @@ EOF
       fi
       curl -sL "$GITHUB_BASE/config/fish/config.fish" -o ~/.config/fish/config.fish
       
-      # Fish conf.d modules
+      # Fish conf.d modules - listing all actual modules
       local FISH_MODULES=(
         "00-environment.fish"
-        "10-options.fish"
-        "20-completions.fish"
-        "30-aliases.fish"
-        "40-functions.fish"
-        "50-keybindings.fish"
-        "60-plugins.fish"
+        "00-homebrew.fish"
+        "02-paths.fish"
+        "10-aliases.fish"
+        "10-node.fish"
+        "11-1password.fish"
+        "20-abbreviations.fish"
+        "20-functions.fish"
+        "20-fzf.fish"
+        "30-abbreviations.fish"
+        "30-functions.fish"
+        "30-git-functions.fish"
+        "31-docker-functions.fish"
+        "32-claude-function.fish"
+        "40-completions.fish"
+        "60-modern-tools.fish"
+        "70-prompt.fish"
+        "80-gcloud.fish"
+        "81-aws.fish"
+        "82-azure.fish"
+        "83-kubectl.fish"
+        "84-tmux.fish"
+        "85-uv.fish"
+        "86-additional-tools.fish"
+        "87-foundry.fish"
       )
       for module in "${FISH_MODULES[@]}"; do
         curl -sL "$GITHUB_BASE/config/fish/conf.d/$module" -o ~/.config/fish/conf.d/$module 2>/dev/null || true
@@ -1228,9 +1267,9 @@ EOF
   printf "\n"
   
   # Success message
-  print_color "$BOLD$GREEN" "    ╔════════════════════════════════════════╗"
-  print_color "$BOLD$GREEN" "    ║     ${ROCKET} Installation Complete! ${ROCKET}      ║"
-  print_color "$BOLD$GREEN" "    ╚════════════════════════════════════════╝"
+  print_color "$BOLD$GREEN" "╔════════════════════════════════════════╗"
+  print_color "$BOLD$GREEN" "║     ${ROCKET} Installation Complete! ${ROCKET}      ║"
+  print_color "$BOLD$GREEN" "╚════════════════════════════════════════╝"
   printf "\n"
   
   log_success "Shell configuration has been successfully installed!"
