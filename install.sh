@@ -921,38 +921,110 @@ EOF
     
   else
     # Remote installation via curl
-    log_info "Remote installation - downloading configurations..."
+    log_info "Remote installation - downloading configurations from GitHub..."
     
     # Base URL for raw GitHub content
     local GITHUB_BASE="https://raw.githubusercontent.com/roderik/shell-config/main"
     
     if [ "$dry_run" -eq 1 ]; then
       log_info "[DRY RUN] Would download and install:"
-      printf "  • Fish configuration from GitHub\n"
-      printf "  • Zsh configuration from GitHub\n"
+      printf "  • Fish configuration and conf.d modules from GitHub\n"
+      printf "  • Zsh configuration and conf.d modules from GitHub\n"
+      printf "  • Bash configuration and conf.d modules from GitHub\n"
       printf "  • Starship configuration from GitHub\n"
+      printf "  • Ghostty terminal configuration from GitHub\n"
     else
       # Download Fish configuration
       log_info "Downloading Fish configuration..."
+      mkdir -p ~/.config/fish/conf.d
+      
+      # Main config
       if [ -f ~/.config/fish/config.fish ] && [ "$force_overwrite" -eq 0 ]; then
         backup_file ~/.config/fish/config.fish
       fi
       curl -sL "$GITHUB_BASE/config/fish/config.fish" -o ~/.config/fish/config.fish
-      log_success "Fish configuration installed"
+      
+      # Fish conf.d modules
+      local FISH_MODULES=(
+        "00-environment.fish"
+        "10-options.fish"
+        "20-completions.fish"
+        "30-aliases.fish"
+        "40-functions.fish"
+        "50-keybindings.fish"
+        "60-plugins.fish"
+      )
+      for module in "${FISH_MODULES[@]}"; do
+        curl -sL "$GITHUB_BASE/config/fish/conf.d/$module" -o ~/.config/fish/conf.d/$module 2>/dev/null || true
+      done
+      log_success "Fish configuration and modules installed"
       
       # Download Zsh configuration
       log_info "Downloading Zsh configuration..."
+      mkdir -p ~/.config/zsh/conf.d
+      
+      # Main .zshrc
       if [ -f ~/.zshrc ] && [ "$force_overwrite" -eq 0 ]; then
         backup_file ~/.zshrc
       fi
       curl -sL "$GITHUB_BASE/config/zsh/.zshrc" -o ~/.zshrc
       
-      # Download conf.d files
-      mkdir -p ~/.config/zsh/conf.d
-      for conf_file in 00-environment 10-options 20-completions 30-aliases 40-functions 50-keybindings 60-plugins; do
-        curl -sL "$GITHUB_BASE/config/zsh/conf.d/${conf_file}.zsh" -o ~/.config/zsh/conf.d/${conf_file}.zsh
+      # Zsh conf.d modules
+      local ZSH_MODULES=(
+        "00-environment.zsh"
+        "10-options.zsh"
+        "20-completions.zsh"
+        "30-aliases.zsh"
+        "40-functions.zsh"
+        "50-keybindings.zsh"
+        "60-plugins.zsh"
+      )
+      for module in "${ZSH_MODULES[@]}"; do
+        curl -sL "$GITHUB_BASE/config/zsh/conf.d/$module" -o ~/.config/zsh/conf.d/$module 2>/dev/null || true
       done
-      log_success "Zsh configuration installed"
+      log_success "Zsh configuration and modules installed"
+      
+      # Download Bash configuration
+      log_info "Downloading Bash configuration..."
+      mkdir -p ~/.config/bash/conf.d
+      
+      # Main .bashrc
+      if [ -f ~/.bashrc ] && [ "$force_overwrite" -eq 0 ]; then
+        backup_file ~/.bashrc
+      fi
+      curl -sL "$GITHUB_BASE/config/bash/.bashrc" -o ~/.bashrc
+      
+      # .bash_profile
+      if [ -f ~/.bash_profile ] && [ "$force_overwrite" -eq 0 ]; then
+        backup_file ~/.bash_profile
+      fi
+      curl -sL "$GITHUB_BASE/config/bash/.bash_profile" -o ~/.bash_profile
+      
+      # Bash conf.d modules - we need to list all actual bash modules
+      local BASH_MODULES=(
+        "00-environment.bash"
+        "10-aliases.bash"
+        "10-node.bash"
+        "11-1password.bash"
+        "12-direnv.bash"
+        "13-gcloud.bash"
+        "14-foundry.bash"
+        "20-fzf.bash"
+        "21-ssh-keys.bash"
+        "30-modern-tools.bash"
+        "31-navigation.bash"
+        "32-claude-function.bash"
+        "33-git-functions.bash"
+        "40-network.bash"
+        "50-keybindings.bash"
+        "60-modern-tools.bash"
+        "70-prompt.bash"
+        "80-completion.bash"
+      )
+      for module in "${BASH_MODULES[@]}"; do
+        curl -sL "$GITHUB_BASE/config/bash/conf.d/$module" -o ~/.config/bash/conf.d/$module 2>/dev/null || true
+      done
+      log_success "Bash configuration and modules installed"
       
       # Download Starship configuration
       log_info "Downloading Starship configuration..."
@@ -961,6 +1033,20 @@ EOF
       fi
       curl -sL "$GITHUB_BASE/config/starship/starship.toml" -o ~/.config/starship.toml
       log_success "Starship configuration installed"
+      
+      # Download Ghostty configuration (macOS specific)
+      if [[ "$OSTYPE" == "darwin"* ]]; then
+        log_info "Downloading Ghostty configuration..."
+        local ghostty_dir="$HOME/Library/Application Support/com.mitchellh.ghostty"
+        mkdir -p "$ghostty_dir"
+        
+        local ghostty_config="$ghostty_dir/config"
+        if [ -f "$ghostty_config" ] && [ "$force_overwrite" -eq 0 ]; then
+          backup_file "$ghostty_config"
+        fi
+        curl -sL "$GITHUB_BASE/config/ghostty/config" -o "$ghostty_config"
+        log_success "Ghostty configuration installed"
+      fi
     fi
   fi
   
