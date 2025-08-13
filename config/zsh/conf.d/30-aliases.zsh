@@ -60,13 +60,14 @@ alias gsts='git stash show --text'
 alias gsw='git switch'
 alias gswc='git switch --create'
 alias gcad='git commit --all --amend'
+alias gpu='git pull'
 
 # Tool shortcuts
 alias lzg='lazygit'
 alias lzd='lazydocker'
 alias ff='fzf --preview "bat --color=always {}"'
 alias cdi='zi'  # zoxide interactive
-# claude is now handled by function in 42-ai-tools.zsh
+alias claude='claude --skip-permissions'
 
 # Common operations
 alias ..='cd ..'
@@ -98,15 +99,4 @@ alias drmi='docker rmi'
 # Network
 alias ip='curl -s ifconfig.me'
 alias localip='ipconfig getifaddr en0'
-
-# Development
-alias serve='python3 -m http.server'
-alias json='python3 -m json.tool'
-
-# macOS specific
-if [[ "$OSTYPE" == "darwin"* ]]; then
-  alias brewup='brew update && brew upgrade && brew cleanup'
-  alias flushdns='sudo dscacheutil -flushcache'
-  alias showfiles='defaults write com.apple.finder AppleShowAllFiles YES; killall Finder'
-  alias hidefiles='defaults write com.apple.finder AppleShowAllFiles NO; killall Finder'
-fi
+alias ports='netstat -tulanp'
