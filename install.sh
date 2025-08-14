@@ -198,11 +198,16 @@ install_fish_config() {
         find "$config_base/fish/conf.d" -name "*.fish" -type f | sort | while read conf_file; do
           local conf_name=$(basename "$conf_file")
           local target_file=~/.config/fish/conf.d/"$conf_name"
-          if [ -f "$target_file" ] && [ "$force_overwrite" -eq 0 ]; then
-            backup_file "$target_file"
+          if [ -f "$target_file" ]; then
+            if [ "$force_overwrite" -eq 0 ]; then
+              backup_file "$target_file"
+            fi
+            cp "$conf_file" "$target_file"
+            log_success "  → conf.d/$conf_name updated"
+          else
+            cp "$conf_file" "$target_file"
+            log_success "  → conf.d/$conf_name installed"
           fi
-          cp "$conf_file" "$target_file"
-          log_success "  → conf.d/$conf_name installed"
         done
       fi
     fi
