@@ -17,5 +17,8 @@ alias exa='eza'
 alias n='nvim'
 alias vim='nvim'
 
+# Git shortcuts
+alias gcmp='git checkout main && git pull'
+
 # FZF preview
 alias ff="fzf --preview 'bat --style=numbers --color=always '"
