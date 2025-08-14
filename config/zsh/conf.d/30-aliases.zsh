@@ -60,6 +60,7 @@ alias gsts='git stash show --text'
 alias gsw='git switch'
 alias gswc='git switch --create'
 alias gcad='git commit --all --amend'
+alias gcmp='git checkout main && git pull'
 alias gpu='git pull'
 
 # Tool shortcuts
