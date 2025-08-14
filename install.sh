@@ -625,10 +625,38 @@ USAGE
     
     for cask in "${CASKS[@]}"; do
       if "$BREW_PATH" list --cask --versions "$cask" &> /dev/null; then
-        log_success "$cask is already installed"
+        log_success "$cask is already installed via Homebrew"
       else
-        log_info "Installing $cask..."
-        "$BREW_PATH" install --cask "$cask"
+        # Check if the application already exists in /Applications
+        local app_name=""
+        case "$cask" in
+          "1password")
+            app_name="1Password.app"
+            ;;
+          "chatgpt")
+            app_name="ChatGPT.app"
+            ;;
+          "cursor")
+            app_name="Cursor.app"
+            ;;
+          "google-cloud-sdk")
+            # Google Cloud SDK doesn't install as an app
+            app_name=""
+            ;;
+          "ghostty")
+            app_name="Ghostty.app"
+            ;;
+        esac
+        
+        if [[ -n "$app_name" ]] && [[ -d "/Applications/$app_name" ]]; then
+          log_warning "$cask appears to be already installed at /Applications/$app_name (not via Homebrew)"
+          log_info "Skipping installation to avoid conflicts"
+        else
+          log_info "Installing $cask..."
+          if ! "$BREW_PATH" install --cask "$cask" 2>/dev/null; then
+            log_warning "Failed to install $cask - it may already be installed or require manual installation"
+          fi
+        fi
       fi
     done
     
@@ -797,15 +825,21 @@ USAGE
     if [ -d /opt/homebrew ]; then
       # Apple Silicon Mac - fix parent directories first
       sudo chmod 755 /opt/homebrew/share 2>/dev/null || true
+      sudo chown root:staff /opt/homebrew/share 2>/dev/null || true
       sudo chmod 755 /opt/homebrew/share/zsh 2>/dev/null || true
+      sudo chown root:staff /opt/homebrew/share/zsh 2>/dev/null || true
       sudo chmod 755 /opt/homebrew/share/zsh/site-functions 2>/dev/null || true
+      sudo chown root:staff /opt/homebrew/share/zsh/site-functions 2>/dev/null || true
     fi
     
     if [ -d /usr/local/share ]; then
       # Intel Mac - fix parent directories first
       sudo chmod 755 /usr/local/share 2>/dev/null || true
+      sudo chown root:staff /usr/local/share 2>/dev/null || true
       sudo chmod 755 /usr/local/share/zsh 2>/dev/null || true
+      sudo chown root:staff /usr/local/share/zsh 2>/dev/null || true
       sudo chmod 755 /usr/local/share/zsh/site-functions 2>/dev/null || true
+      sudo chown root:staff /usr/local/share/zsh/site-functions 2>/dev/null || true
     fi
     
     # Fix user's Zsh directories
@@ -828,7 +862,9 @@ USAGE
           if [ -n "$dir" ] && [ -d "$dir" ]; then
             # Use sudo for system directories, regular chmod for user directories
             if [[ "$dir" == /opt/* ]] || [[ "$dir" == /usr/* ]]; then
-              sudo chmod 755 "$dir" 2>/dev/null && log_success "Fixed permissions for: $dir" || log_warning "Could not fix: $dir"
+              sudo chmod 755 "$dir" 2>/dev/null && \
+              sudo chown root:staff "$dir" 2>/dev/null && \
+              log_success "Fixed permissions and ownership for: $dir" || log_warning "Could not fix: $dir"
             else
               chmod 755 "$dir" 2>/dev/null && log_success "Fixed permissions for: $dir" || log_warning "Could not fix: $dir"
             fi
