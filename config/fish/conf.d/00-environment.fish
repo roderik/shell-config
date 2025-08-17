@@ -22,3 +22,5 @@ fish_add_path ~/bin
 set -x FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'
 set -x FZF_CTRL_T_COMMAND "$FZF_DEFAULT_COMMAND"
 set -x FZF_DEFAULT_OPTS '--height 40% --layout=reverse --border'
+
+set fish_greeting

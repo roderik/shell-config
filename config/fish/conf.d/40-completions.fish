@@ -20,11 +20,6 @@ if command -v direnv > /dev/null
     direnv hook fish | source
 end
 
-# Initialize fnm
-if command -v fnm > /dev/null
-    fnm env --use-on-cd | source
-end
-
 # FZF key bindings
 if test -f /opt/homebrew/opt/fzf/shell/key-bindings.fish
     source /opt/homebrew/opt/fzf/shell/key-bindings.fish

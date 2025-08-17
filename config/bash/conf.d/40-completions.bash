@@ -21,11 +21,6 @@ if command -v direnv > /dev/null 2>&1; then
   eval "$(direnv hook bash)"
 fi
 
-# Initialize fnm
-if command -v fnm > /dev/null 2>&1; then
-  eval "$(fnm env --use-on-cd)"
-fi
-
 # FZF key bindings
 if [[ -f /opt/homebrew/opt/fzf/shell/key-bindings.bash ]]; then
   source /opt/homebrew/opt/fzf/shell/key-bindings.bash
