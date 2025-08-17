@@ -6,6 +6,7 @@ alias ll='eza -alh'
 alias la='eza -a'
 alias lt='eza --tree'
 alias cat='bat'
+alias sg='ast-grep'
 
 # Git shortcuts (in addition to abbreviations)
 alias g='git'
