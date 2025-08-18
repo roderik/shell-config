@@ -48,7 +48,6 @@ fi
 
 # Ripgrep aliases (better grep)
 if command -v rg &> /dev/null; then
-  alias grep='rg'
   alias rgi='rg -i'  # case insensitive
   alias rgl='rg -l'  # files with matches
   alias rgv='rg -v'  # invert match

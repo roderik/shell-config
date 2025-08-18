@@ -79,7 +79,6 @@ alias cp='cp -i'
 alias mv='mv -i'
 
 # Search and find
-alias grep='rg'
 alias find='fd'
 
 # System

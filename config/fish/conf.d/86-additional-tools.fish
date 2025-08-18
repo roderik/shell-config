@@ -52,13 +52,12 @@ end
 
 # Ripgrep aliases (better grep)
 if type -q rg
-    alias grep='rg'
     alias rgi='rg -i'  # case insensitive
     alias rgl='rg -l'  # files with matches
     alias rgv='rg -v'  # invert match
 end
 
-# fd aliases (better find)  
+# fd aliases (better find)
 if type -q fd
     alias find='fd'
     alias fdi='fd -i'  # case insensitive
