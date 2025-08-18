@@ -9,7 +9,10 @@ end
 # zoxide - Smarter cd command
 if command -q zoxide
     zoxide init fish | source
-    alias cd='z'
+    # Create cd as a function that calls z to avoid alias expansion issues
+    function cd --wraps z
+        z $argv
+    end
     alias cdi='zi' # interactive selection
 end
 

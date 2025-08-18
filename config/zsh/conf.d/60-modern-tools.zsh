@@ -10,7 +10,10 @@ fi
 # zoxide - Smarter cd command
 if command -v zoxide &> /dev/null; then
   eval "$(zoxide init zsh)"
-  alias cd='z'
+  # Create cd as a function that calls z to avoid alias expansion issues
+  function cd() {
+    z "$@"
+  }
   alias cdi='zi' # interactive selection
 fi
 
