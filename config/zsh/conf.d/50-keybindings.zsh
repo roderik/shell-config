@@ -26,12 +26,6 @@ bindkey '^W' backward-kill-word
 bindkey '^U' backward-kill-line
 bindkey '^K' kill-line
 
-# FZF key bindings
-if [[ -f /opt/homebrew/opt/fzf/shell/key-bindings.zsh ]]; then
-  source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
-elif [[ -f /usr/local/opt/fzf/shell/key-bindings.zsh ]]; then
-  source /usr/local/opt/fzf/shell/key-bindings.zsh
-fi
 
 # Edit command line in editor
 autoload -Uz edit-command-line

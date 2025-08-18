@@ -600,21 +600,15 @@ USAGE
       "kubernetes-cli" # kubectl command
       "node"           # Node.js JavaScript runtime
       "rsync"          # Fast file transfer
-      "sudo-touchid"   # Enable TouchID for sudo
       "tilt"           # Local Kubernetes development
       "tmux"           # Terminal multiplexer
       "zellij"         # Modern terminal multiplexer
       "uv"             # Fast Python package installer
     )
 
-    for tool in "${TOOLS[@]}"; do
-      if "$BREW_PATH" list --versions "$tool" &> /dev/null; then
-        log_success "$tool is already installed"
-      else
-        log_info "Installing $tool..."
-        "$BREW_PATH" install "$tool"
-      fi
-    done
+    # Install all tools in one go without checking
+    log_info "Installing all tools in batch (this may take a while)..."
+    "$BREW_PATH" install "${TOOLS[@]}"
 
     # Install cask applications
     log_info "Installing cask applications..."
@@ -629,42 +623,28 @@ USAGE
       "vibetunnel"     # VibeTunnel CLI tool (vt command, used in 32-claude-function.bash)
     )
 
+    # Get list of installed casks in one go
+    local installed_casks=$("$BREW_PATH" list --cask 2>/dev/null || true)
+    
+    # Filter out already installed casks
+    local casks_to_install=()
     for cask in "${CASKS[@]}"; do
-      if "$BREW_PATH" list --cask --versions "$cask" &> /dev/null; then
+      if echo "$installed_casks" | grep -q "^${cask}$"; then
         log_success "$cask is already installed via Homebrew"
       else
-        # Check if the application already exists in /Applications
-        local app_name=""
-        case "$cask" in
-          "1password")
-            app_name="1Password.app"
-            ;;
-          "chatgpt")
-            app_name="ChatGPT.app"
-            ;;
-          "cursor")
-            app_name="Cursor.app"
-            ;;
-          "google-cloud-sdk")
-            # Google Cloud SDK doesn't install as an app
-            app_name=""
-            ;;
-          "ghostty")
-            app_name="Ghostty.app"
-            ;;
-        esac
-
-        if [[ -n "$app_name" ]] && [[ -d "/Applications/$app_name" ]]; then
-          log_warning "$cask appears to be already installed at /Applications/$app_name (not via Homebrew)"
-          log_info "Skipping installation to avoid conflicts"
-        else
-          log_info "Installing $cask..."
-          if ! "$BREW_PATH" install --cask "$cask" 2>/dev/null; then
-            log_warning "Failed to install $cask - it may already be installed or require manual installation"
-          fi
-        fi
+        casks_to_install+=("$cask")
       fi
     done
+    
+    # Install remaining casks in one batch if there are any
+    if [ ${#casks_to_install[@]} -gt 0 ]; then
+      log_info "Installing casks in batch: ${casks_to_install[*]}"
+      "$BREW_PATH" install --cask "${casks_to_install[@]}" || {
+        log_warning "Some casks failed to install. They may already be installed or require manual installation"
+      }
+    else
+      log_success "All casks are already installed"
+    fi
 
     # Configure atuin
     log_info "Configuring atuin..."
@@ -682,31 +662,6 @@ USAGE
 
     # Configure tools that need special setup
     log_info "Configuring tool-specific settings..."
-
-    # Configure sudo-touchid
-    if command -v sudo-touchid &> /dev/null; then
-      log_info "Configuring TouchID for sudo..."
-      if sudo-touchid --check 2>/dev/null; then
-        log_success "TouchID for sudo is already configured"
-      else
-        log_info "Enabling TouchID for sudo (requires sudo)..."
-        sudo sudo-touchid
-        log_success "TouchID for sudo enabled"
-      fi
-
-      # Start the sudo-touchid service to persist across updates
-      log_info "Starting sudo-touchid service..."
-      if "$BREW_PATH" services list | grep -q "sudo-touchid.*started"; then
-        log_success "sudo-touchid service is already running"
-      else
-        if sudo "$BREW_PATH" services start artginzburg/tap/sudo-touchid 2>/dev/null; then
-          log_success "sudo-touchid service started (persists TouchID for sudo across macOS updates)"
-        else
-          log_warning "Could not start sudo-touchid service automatically"
-          log_info "You can manually start it with: sudo brew services start artginzburg/tap/sudo-touchid"
-        fi
-      fi
-    fi
 
     # Configure kubectx/kubens
     if command -v kubectx &> /dev/null; then

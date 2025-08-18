@@ -223,12 +223,6 @@ if command -v direnv >/dev/null 2>&1; then
   eval "$(direnv hook bash)"
 fi
 
-# zoxide - Smarter cd command
-if command -v zoxide >/dev/null 2>&1; then
-  eval "$(zoxide init bash)"
-  alias cd='z'
-  alias cdi='zi'
-fi
 
 # atuin - Better shell history
 if command -v atuin >/dev/null 2>&1; then

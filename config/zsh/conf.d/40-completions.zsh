@@ -1,29 +1,7 @@
 #!/usr/bin/env zsh
 # Completions and Integrations
 
-# Initialize Starship prompt
-if command -v starship > /dev/null 2>&1; then
-  eval "$(starship init zsh)"
-fi
-
-# Initialize zoxide
-if command -v zoxide > /dev/null 2>&1; then
-  eval "$(zoxide init zsh)"
-fi
-
-# Initialize atuin
-if command -v atuin > /dev/null 2>&1; then
-  eval "$(atuin init zsh)"
-fi
-
-# Initialize direnv
-if command -v direnv > /dev/null 2>&1; then
-  eval "$(direnv hook zsh)"
-fi
-
-# FZF key bindings
-if [[ -f /opt/homebrew/opt/fzf/shell/key-bindings.zsh ]]; then
-  source /opt/homebrew/opt/fzf/shell/key-bindings.zsh
-elif [[ -f /usr/local/opt/fzf/shell/key-bindings.zsh ]]; then
-  source /usr/local/opt/fzf/shell/key-bindings.zsh
-fi
+# Note: Tool initializations moved to their respective config files:
+# - Starship: 70-prompt.zsh
+# - Zoxide, Atuin, Direnv: 60-modern-tools.zsh
+# - FZF: 20-fzf.zsh and 50-keybindings.zsh
