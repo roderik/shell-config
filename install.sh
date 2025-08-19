@@ -625,7 +625,7 @@ USAGE
 
     # Get list of installed casks in one go
     local installed_casks=$("$BREW_PATH" list --cask 2>/dev/null || true)
-    
+
     # Filter out already installed casks
     local casks_to_install=()
     for cask in "${CASKS[@]}"; do
@@ -635,7 +635,7 @@ USAGE
         casks_to_install+=("$cask")
       fi
     done
-    
+
     # Install remaining casks in one batch if there are any
     if [ ${#casks_to_install[@]} -gt 0 ]; then
       log_info "Installing casks in batch: ${casks_to_install[*]}"
@@ -1137,6 +1137,8 @@ EOF
       fi
     fi
   fi
+
+  sed "s/^#auth/auth/" /etc/pam.d/sudo_local.template | sudo tee /etc/pam.d/sudo_local
 
   # Create manifest for uninstall
   if [ "$dry_run" -eq 0 ]; then
