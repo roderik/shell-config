@@ -24,3 +24,32 @@ end
 function glog --description 'Pretty git log with graph'
     git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 end
+
+function gdm --description 'Delete all local branches except main/master (force delete)'
+    set -l current_branch (git branch --show-current)
+    set -l protected_branches "main" "master"
+    
+    # Check if we're on a branch that will be deleted
+    if not contains $current_branch $protected_branches
+        echo "Switching to main/master first..."
+        if git show-ref --verify --quiet refs/heads/main
+            git checkout main
+        else if git show-ref --verify --quiet refs/heads/master
+            git checkout master
+        else
+            echo "Error: Neither main nor master branch exists"
+            return 1
+        end
+    end
+    
+    # Delete all branches except protected ones
+    set -l branches_to_delete (git branch | sed 's/^[* ]*//' | grep -v '^main$' | grep -v '^master$')
+    if test (count $branches_to_delete) -gt 0
+        for branch in $branches_to_delete
+            git branch -D $branch
+        end
+        echo "Deleted branches: $branches_to_delete"
+    else
+        echo "No branches to delete"
+    end
+end

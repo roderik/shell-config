@@ -791,7 +791,7 @@ USAGE
 
     if [ -d /usr/local/share ]; then
       # Intel Mac - fix parent directories first
-      sudo chown -R $USE /usr/local/share /usr/local/share/zsh /usr/local/share/zsh/site-functions || true
+      sudo chown -R $USER /usr/local/share /usr/local/share/zsh /usr/local/share/zsh/site-functions || true
       chmod u+w /usr/local/share /usr/local/share/zsh /usr/local/share/zsh/site-functions || true
     fi
 
