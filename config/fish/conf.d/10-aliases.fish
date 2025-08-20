@@ -6,7 +6,6 @@ alias ll='eza -alh'
 alias la='eza -a'
 alias lt='eza --tree'
 alias cat='bat'
-alias sg='ast-grep'
 
 # Git shortcuts (in addition to abbreviations)
 alias g='git'
@@ -27,9 +26,6 @@ alias mkdir='mkdir -p'
 alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
-
-# Search and find
-alias find='fd'
 
 # System
 alias reload='source ~/.config/fish/config.fish'

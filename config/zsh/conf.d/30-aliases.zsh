@@ -78,9 +78,6 @@ alias rm='rm -i'
 alias cp='cp -i'
 alias mv='mv -i'
 
-# Search and find
-alias find='fd'
-
 # System
 alias reload='source ~/.zshrc'
 alias zshconfig='$EDITOR ~/.zshrc'

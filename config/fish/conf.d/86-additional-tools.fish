@@ -59,7 +59,6 @@ end
 
 # fd aliases (better find)
 if type -q fd
-    alias find='fd'
     alias fdi='fd -i'  # case insensitive
     alias fdh='fd -H'  # include hidden
 end
@@ -88,7 +87,7 @@ end
 
 # ast-grep - Structural search/replace
 if type -q ast-grep
-    alias ag='ast-grep'
-    alias ags='ast-grep search'
-    alias agr='ast-grep replace'
+    alias sg='ast-grep'
+    alias sgs='ast-grep search'
+    alias sgr='ast-grep replace'
 end

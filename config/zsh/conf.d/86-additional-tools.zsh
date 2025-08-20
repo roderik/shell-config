@@ -55,7 +55,6 @@ fi
 
 # fd aliases (better find)
 if command -v fd &> /dev/null; then
-  alias find='fd'
   alias fdi='fd -i'  # case insensitive
   alias fdh='fd -H'  # include hidden
 fi
@@ -84,7 +83,7 @@ fi
 
 # ast-grep - Structural search/replace
 if command -v ast-grep &> /dev/null; then
-  alias ag='ast-grep'
-  alias ags='ast-grep search'
-  alias agr='ast-grep replace'
+  alias ag='sst-grep'
+  alias ags='sst-grep search'
+  alias agr='sst-grep replace'
 fi

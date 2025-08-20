@@ -48,7 +48,6 @@ fi
 
 # Ripgrep aliases (better grep)
 if command -v rg &> /dev/null; then
-  alias grep='rg'
   alias rgi='rg -i'  # case insensitive
   alias rgl='rg -l'  # files with matches
   alias rgv='rg -v'  # invert match
@@ -56,7 +55,6 @@ fi
 
 # fd aliases (better find)
 if command -v fd &> /dev/null; then
-  alias find='fd'
   alias fdi='fd -i'  # case insensitive
   alias fdh='fd -H'  # include hidden
 fi
@@ -85,7 +83,7 @@ fi
 
 # ast-grep - Structural search/replace
 if command -v ast-grep &> /dev/null; then
-  alias ag='ast-grep'
-  alias ags='ast-grep search'
-  alias agr='ast-grep replace'
+  alias sg='ast-grep'
+  alias sgs='ast-grep search'
+  alias sgr='ast-grep replace'
 fi
