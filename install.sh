@@ -604,6 +604,7 @@ USAGE
       "tmux"           # Terminal multiplexer
       "zellij"         # Modern terminal multiplexer
       "uv"             # Fast Python package installer
+      "shellcheck"     # Shell script static analysis tool
     )
 
     # Install all tools in one go without checking
