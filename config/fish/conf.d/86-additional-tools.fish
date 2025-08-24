@@ -67,7 +67,7 @@ end
 if type -q bat
     alias cat='bat --style=plain'
     alias catp='bat'  # with style
-    set -gx BAT_THEME "Catppuccin-macchiato"
+    set -gx BAT_THEME "base16-256"
     set -gx MANPAGER "sh -c 'col -bx | bat -l man -p'"
 end
 

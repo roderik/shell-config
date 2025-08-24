@@ -616,7 +616,7 @@ USAGE
     local CASKS=(
       "1password"      # Password manager
       "chatgpt"        # ChatGPT desktop app
-      "visual-studio-code@insiders"         # AI-powered code editor
+      "cursor"         # AI-powered code editor
       "google-cloud-sdk" # Google Cloud SDK (gcloud)
       "ghostty"        # Modern terminal emulator
       "claude"        # AI-powered coding assistant

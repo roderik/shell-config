@@ -63,7 +63,7 @@ fi
 if command -v bat &> /dev/null; then
   alias cat='bat --style=plain'
   alias catp='bat'  # with style
-  export BAT_THEME="Catppuccin-macchiato"
+  export BAT_THEME="base16-256"
   export MANPAGER="sh -c 'col -bx | bat -l man -p'"
 fi
 
