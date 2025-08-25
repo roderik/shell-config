@@ -20,5 +20,8 @@ alias vim='nvim'
 # Git shortcuts
 alias gcmp='git checkout main && git pull'
 
+# Kubernetes
+alias kx='kubectx'
+
 # FZF preview
 alias ff="fzf --preview 'bat --style=numbers --color=always '"

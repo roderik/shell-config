@@ -83,6 +83,9 @@ alias reload='source ~/.zshrc'
 alias zshconfig='$EDITOR ~/.zshrc'
 alias zshlocal='$EDITOR ~/.zshrc.local'
 
+# Kubernetes
+alias kx='kubectx'
+
 # Docker
 alias d='docker'
 alias dc='docker compose'
