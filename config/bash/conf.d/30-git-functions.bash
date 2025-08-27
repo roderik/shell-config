@@ -30,3 +30,36 @@ glog() {
   # Pretty git log with graph
   git log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
 }
+
+gdm() {
+  # Delete all local branches except main/master (force delete)
+  local current_branch
+  current_branch=$(git branch --show-current)
+  local protected_branches=("main" "master")
+  
+  # Check if we're on a branch that will be deleted
+  if [[ ! " ${protected_branches[@]} " =~ " ${current_branch} " ]]; then
+    echo "Switching to main/master first..."
+    if git show-ref --verify --quiet refs/heads/main; then
+      git checkout main
+    elif git show-ref --verify --quiet refs/heads/master; then
+      git checkout master
+    else
+      echo "Error: Neither main nor master branch exists"
+      return 1
+    fi
+  fi
+  
+  # Delete all branches except protected ones
+  local branches_to_delete
+  branches_to_delete=$(git branch | sed 's/^[* ]*//' | grep -v '^main$' | grep -v '^master$')
+  if [[ -n "$branches_to_delete" ]]; then
+    echo "$branches_to_delete" | while IFS= read -r branch; do
+      git branch -D "$branch"
+    done
+    echo "Deleted branches:"
+    echo "$branches_to_delete"
+  else
+    echo "No branches to delete"
+  fi
+}

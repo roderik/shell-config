@@ -31,6 +31,9 @@ alias mv='mv -i'
 alias reload='source ~/.config/fish/config.fish'
 alias fishconfig='$EDITOR ~/.config/fish/config.fish'
 
+# Kubernetes
+alias kx='kubectx'
+
 # Docker
 alias dps='docker ps'
 alias dpsa='docker ps -a'
