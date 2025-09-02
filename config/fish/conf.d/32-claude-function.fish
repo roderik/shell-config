@@ -19,3 +19,40 @@ function claude --description 'Claude Code with skip permissions'
         end
     end
 end
+
+function opencode --description 'Opencode wrapper'
+    if command -q vt
+        vt -q opencode $argv
+    else
+        command opencode $argv
+    end
+end
+
+alias oc="opencode"
+
+# Codex function
+function codex --description 'Codex wrapper'
+  if command -v vt >/dev/null 2>&1; then
+    vt -q codex --dangerously-bypass-approvals-and-sandbox $argv    
+  else
+    command codex --dangerously-bypass-approvals-and-sandbox $argv
+  end
+end
+
+# Cursor Agent function
+function cursor-agent --description 'Cursor Agent wrapper'
+  if command -v vt >/dev/null 2>&1; then
+    vt -q cursor-agent -f $argv
+  else
+    command cursor-agent -f $argv
+  end
+end
+
+# Gemini function
+function gemini --description 'Gemini wrapper'
+  if command -v vt >/dev/null 2>&1; then
+    vt -q gemini -y $argv
+  else
+    command gemini -y $argv
+  end
+end

@@ -16,7 +16,6 @@ alias lzd='lazydocker'
 alias ff='fzf --preview "bat --color=always {}"'
 alias cd='z'
 alias cdi='zi'
-alias claude='claude --skip-permissions'
 
 # Common operations
 alias ..='cd ..'

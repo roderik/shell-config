@@ -46,3 +46,14 @@ gemini() {
     command gemini -y "$@"
   fi
 }
+
+# Opencode function
+opencode() {
+  if command -v vt >/dev/null 2>&1; then
+    vt -q opencode "$@"
+  else
+    command opencode "$@"
+  fi
+}
+
+alias oc="opencode"
