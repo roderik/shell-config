@@ -578,6 +578,7 @@ USAGE
       "lazygit"        # Terminal UI for git
       "lazydocker"     # Terminal UI for docker
       "git-delta"      # Better git diff
+      "difftastic"     # Better git diff
       "chafa"          # Terminal graphics
       "hexyl"          # Hex viewer
       "procs"          # Better ps
@@ -1255,6 +1256,11 @@ EOF
       log_info "You can check the messages above for details."
     fi
   fi
+
+  git config --global difftool.difftastic.cmd 'difft "$LOCAL" "$REMOTE"'
+  git config --global difftool.prompt false
+  git config --global diff.external difft
+  git config --global core.pager delta
 
   printf "\n"
 
