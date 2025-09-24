@@ -1,0 +1,48 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+fd_bin="$(command -v fd || command -v fdfind || true)"
+rg_bin="$(command -v rg || true)"
+
+if [[ -z "$fd_bin" ]]; then
+  echo "error: fd (or fdfind) is required for linting" >&2
+  exit 1
+fi
+
+if [[ -z "$rg_bin" ]]; then
+  echo "error: ripgrep (rg) is required for linting" >&2
+  exit 1
+fi
+
+mapfile -t fish_files < <(
+  cd "$root_dir"
+  "$fd_bin" --extension fish --type f --absolute-path . config/fish
+)
+
+if [[ ${#fish_files[@]} -eq 0 ]]; then
+  echo "no fish files found under config/fish"
+  exit 0
+fi
+
+status=0
+
+tmp_report="$(mktemp)"
+
+for file in "${fish_files[@]}"; do
+  if ! fish --no-execute "$file"; then
+    echo "syntax error: $file" >&2
+    status=1
+  fi
+done
+
+if "$rg_bin" --fixed-strings '; then' --glob '*.fish' -n "$root_dir/config/fish" >"$tmp_report" 2>/dev/null; then
+  cat "$tmp_report" >&2
+  echo "detected bash-style '; then' in fish scripts" >&2
+  status=1
+fi
+
+rm -f "$tmp_report"
+
+exit $status

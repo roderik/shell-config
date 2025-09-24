@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+root_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+tmp_root="$(mktemp -d)"
+trap 'rm -rf "$tmp_root"' EXIT
+
+mkdir -p "$tmp_root/fish" "$tmp_root/data" "$tmp_root/state"
+# Mirror the repo config into a disposable XDG tree so tests never touch the host setup.
+cp -R "$root_dir/config/fish/." "$tmp_root/fish/"
+
+required_functions=(
+  claude
+  opencode
+  codex
+  cursor-agent
+  gemini
+)
+
+env \
+  XDG_CONFIG_HOME="$tmp_root" \
+  XDG_DATA_HOME="$tmp_root/data" \
+  XDG_STATE_HOME="$tmp_root/state" \
+  fish --private <<'FISH'
+set missing 0
+set required_functions claude opencode codex cursor-agent gemini
+
+for name in $required_functions
+  if not functions -q $name
+    echo "missing function: $name" >&2
+    set missing 1
+  end
+end
+
+if not functions -q oc
+  echo "missing alias function: oc" >&2
+  set missing 1
+end
+
+if test $missing -ne 0
+  exit $missing
+end
+
+exit 0
+FISH

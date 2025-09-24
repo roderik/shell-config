@@ -4,7 +4,7 @@
 
 # UI & Theme
 # Use popular built-in themes with auto light/dark switching
-theme = dark:catppuccin-mocha,light:catppuccin-latte
+theme = Catppuccin Mocha
 
 
 # Subtle translucency with tasteful blur (macOS supported)
