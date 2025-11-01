@@ -46,7 +46,6 @@ Modern tri-shell configuration with Fish, Zsh, and Bash support, featuring power
 | **zoxide**     | Smarter directory navigation                 | `cd`      |
 | **atuin**      | Better shell history with sync               | -         |
 | **direnv**     | Per-project environment variables            | -         |
-| **vibetunnel** | VibeTunnel CLI (vt command)                  | -         |
 | **1password**  | 1Password CLI integration                    | -         |
 
 ### 🎯 Developer Experience
@@ -228,7 +227,6 @@ Smart wrapper that auto-detects project settings:
 
 ```bash
 # Automatically uses .claude/AUTO_PLAN_MODE.txt if present
-# Falls back to vt (VibeTunnel) if available
 claude [args]
 ```
 

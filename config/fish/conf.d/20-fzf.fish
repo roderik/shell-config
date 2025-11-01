@@ -3,7 +3,16 @@
 
 if command -q fzf
     # Set up fzf key bindings and fuzzy completion
-    fzf --fish | source
+    # Temporarily disabled due to fish bind syntax changes
+    # fzf --fish | source
+
+    # Manual key bindings with new fish syntax
+    bind ctrl-r 'fzf-history-widget'
+    bind -M insert ctrl-r 'fzf-history-widget'
+    bind ctrl-t 'fzf-file-widget'
+    bind -M insert ctrl-t 'fzf-file-widget'
+    bind alt-c 'fzf-cd-widget'
+    bind -M insert alt-c 'fzf-cd-widget'
 
     # Custom FZF defaults
     set -gx FZF_DEFAULT_COMMAND 'fd --type f --hidden --follow --exclude .git'

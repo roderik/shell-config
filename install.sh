@@ -622,7 +622,6 @@ USAGE
       "ghostty"        # Modern terminal emulator
       "claude"        # AI-powered coding assistant
       "1password-cli"  # 1Password CLI (11-1password.bash)
-      "vibetunnel"     # VibeTunnel CLI tool (vt command, used in 32-claude-function.bash)
     )
 
     # Get list of installed casks in one go
