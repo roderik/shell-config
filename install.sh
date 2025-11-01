@@ -519,6 +519,7 @@ USAGE
 
   if [ "$dry_run" -eq 1 ]; then
     log_info "[DRY RUN] Would check/install Homebrew at: $BREW_PATH"
+    log_info "[DRY RUN] Would add Homebrew tap: dorkitude/linctl"
     log_info "[DRY RUN] Would install the following tools:"
     printf "  • neovim     - Modern Vim editor\n"
     printf "  • luarocks   - Lua package manager\n"
@@ -536,6 +537,7 @@ USAGE
     printf "  • zoxide     - Smarter cd command (z/zi)\n"
     printf "  • atuin      - Better shell history with sync\n"
     printf "  • foundry    - Ethereum development toolkit\n"
+    printf "  • linctl     - Kubernetes cluster management tool\n"
     printf "  • And more...\n"
     printf "\n"
     log_info "[DRY RUN] Would install Bun via official installer (curl -fsSL https://bun.sh/install | bash)"
@@ -551,6 +553,10 @@ USAGE
       log_info "Updating Homebrew..."
       "$BREW_PATH" update
     fi
+
+    # Add Homebrew taps
+    log_info "Adding Homebrew taps..."
+    "$BREW_PATH" tap dorkitude/linctl || log_warning "Failed to add tap dorkitude/linctl (may already be added)"
 
     # Install modern tools
     log_info "Installing modern development tools..."
@@ -606,6 +612,7 @@ USAGE
       "zellij"         # Modern terminal multiplexer
       "uv"             # Fast Python package installer
       "shellcheck"     # Shell script static analysis tool
+      "linctl"         # Kubernetes cluster management tool
     )
 
     # Install all tools in one go without checking
